@@ -1,0 +1,39 @@
+.gradle
+gradle
+version.properties
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+
+*.log
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+### Webapp ###
+/node_modules
+package-lock.json
+src/main/resources/static
+
+META-INF
+
+### Bdd Tests ###
+/screenshots
