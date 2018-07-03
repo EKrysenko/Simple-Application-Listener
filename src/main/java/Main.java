@@ -1,10 +1,12 @@
-import static runners.CobolApplicationRunner.runCobolApp;
+import runners.ProducerApplicationRunner;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        runCobolApp();
+        ProducerApplicationRunner runner = new ProducerApplicationRunner();
+
+        runner.runCobolApp();
 
     }
 
