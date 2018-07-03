@@ -1,26 +1,31 @@
 package readers;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.CharBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+
+import static java.nio.channels.FileChannel.MapMode;
 
 public class SharedFileReader {
 
-    public String readFile(String path) throws IOException {
+    public void readFile(String path) throws IOException {
 
-        String result;
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        RandomAccessFile file = new RandomAccessFile("/dev/shm/image-cache", "rw");
 
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
+        FileChannel channel = file.getChannel();
 
-            while (line != null) {
-                sb.append(line);
-                sb.append(System.lineSeparator());
-                line = br.readLine();
-            }
-            result = sb.toString();
+        MappedByteBuffer b = channel.map(MapMode.READ_WRITE, 0, 4096);
+        CharBuffer charBuf = b.asCharBuffer();
+
+        // Prints 'Hello server'
+        char c;
+        while ((c = charBuf.get()) != 0) {
+            System.out.print(c);
         }
-        return result;
+        System.out.println();
+
+        charBuf.put(0, '\0');
     }
 }

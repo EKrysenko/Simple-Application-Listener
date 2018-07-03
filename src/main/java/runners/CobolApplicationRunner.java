@@ -1,7 +1,6 @@
 package runners;
 
 import readers.SharedFileReader;
-import writers.SharedFileWriter;
 
 public class CobolApplicationRunner {
 
@@ -17,9 +16,12 @@ public class CobolApplicationRunner {
 
         System.out.println("Application listener is running");
         long start = System.nanoTime();
+
         executeApp();
+
         long finish = System.nanoTime();
         System.out.println("Application listener stops");
+
         long traceTime = finish - start;
         System.out.println("Executing time is " + traceTime);
     }
@@ -29,13 +31,13 @@ public class CobolApplicationRunner {
         try {
             System.out.println("Java launching the cobol application...");
 
-            Runtime.getRuntime().exec(DOCKER_RUN);
+//            Runtime.getRuntime().exec(DOCKER_RUN);
 
-            new SharedFileWriter().writeToFile(INPUT_PATH, TEXT);
+//            new SharedFileWriter().writeToFile(INPUT_PATH, TEXT);
 
             new SharedFileReader().readFile(OUTPUT_PATH);
 
-            Runtime.getRuntime().exec(DOCKER_REMOVE);
+//            Runtime.getRuntime().exec(DOCKER_REMOVE);
 
         } catch (Exception e) {
             e.printStackTrace();
