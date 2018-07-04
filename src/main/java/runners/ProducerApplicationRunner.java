@@ -1,7 +1,5 @@
 package runners;
 
-import scheduler.Scheduler;
-
 import java.io.*;
 import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
@@ -13,8 +11,7 @@ public class ProducerApplicationRunner {
     private static final String SHARED_MEMORY_PATH = "/dev/shm/image-cache";
     private static final String RECEIVED_FILE = "./received.txt";
     private static final String SEND_FILE = "./send.txt";
-    public static final String NAMED_PIPE = "/home/egor/COBOL_WORKS/test_fifo/TEMP/FILE.in";
-    Scheduler scheduler = new Scheduler(NAMED_PIPE);
+
 
     public void runCobolApp() throws FileNotFoundException {
 
@@ -22,17 +19,16 @@ public class ProducerApplicationRunner {
 
     }
 
-    private void executeApp() {
+    private void executeApp() throws FileNotFoundException {
 
+        RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
 
-        try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
-             FileChannel channel = sharedMemory.getChannel()) {
+        try (FileChannel channel = sharedMemory.getChannel()) {
 
             writeToSHM(channel, SHARED_MEMORY_PATH);
-            scheduler.setCommand(0);
-            if (scheduler.getCommand() == 1) {
-                readSHM(channel, SHARED_MEMORY_PATH);
-            }
+
+            readSHM(channel, SHARED_MEMORY_PATH);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,6 +41,7 @@ public class ProducerApplicationRunner {
         charBuffer.clear();
 
         charBuffer.put(getOutputChars(SEND_FILE));
+        channel.close();
     }
 
     private void readSHM(FileChannel channel, String path) throws IOException {
@@ -72,13 +69,13 @@ public class ProducerApplicationRunner {
 
     private char[] getOutputChars(String path) throws IOException {
 
+        BufferedReader br = new BufferedReader(new FileReader(path));
         String line;
         StringBuilder builder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            while ((line = br.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
+        while ((line = br.readLine()) != null) {
+            builder.append(line).append("\n");
         }
+        br.close();
 
         return builder.toString().toCharArray();
     }
