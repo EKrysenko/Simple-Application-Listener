@@ -1,7 +1,7 @@
 package readers;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
+import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -9,15 +9,19 @@ import static java.nio.channels.FileChannel.MapMode;
 
 public class SharedFileReader {
 
-    public byte[] readFile(String path) throws IOException {
+    public char[] readFile(String path) throws IOException {
 
-        FileChannel channel = new RandomAccessFile(path, "rw").getChannel();
+        RandomAccessFile file = new RandomAccessFile(path, "rw");
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 4096);
+        FileChannel channel = file.getChannel();
 
-        byte[] bytes = new byte[4096];
-        buffer.get(bytes);
-        return bytes;
+        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 609600);
+        CharBuffer charBuf = buffer.asCharBuffer();
+        char[] received = new char[4096];
 
+        charBuf.get(received);
+        channel.close();
+
+        return received;
     }
 }
