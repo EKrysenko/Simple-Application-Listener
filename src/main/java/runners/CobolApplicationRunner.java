@@ -18,9 +18,9 @@ public class CobolApplicationRunner {
 
         try {
 
-            new SharedFileReader().readFile(OUTPUT_PATH);
+            byte[] bytes = new SharedFileReader().readFile(OUTPUT_PATH);
 
-            new SharedFileWriter().writeToFile(INPUT_PATH);
+            new SharedFileWriter().writeToFile(INPUT_PATH, bytes);
 
         } catch (Exception e) {
             e.printStackTrace();
