@@ -1,29 +1,25 @@
 package writers;
 
+import java.io.File;
 import java.io.RandomAccessFile;
-import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 
 public class SharedFileWriter {
 
-    public void writeToFile(String path, String text) throws Exception {
+    public void writeToFile(String path) throws Exception {
 
-        RandomAccessFile file = new RandomAccessFile("/dev/shm/image-cache", "rw");
+        RandomAccessFile sharedMemory = new RandomAccessFile(path, "rw");
 
-        FileChannel channel = file.getChannel();
+        RandomAccessFile file = new RandomAccessFile(new File("./send.txt"), "r");
+        byte[] bytes = new byte[(int) file.length()];
+        file.readFully(bytes);
+        FileChannel channel = sharedMemory.getChannel();
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 4096);
-        CharBuffer charBuf = buffer.asCharBuffer();
-
-        String textToSend = text + "\0";
-        char[] message = textToSend.toCharArray();
-        charBuf.put(message);
-
-        System.out.println("Waiting for client.");
-        while (charBuf.get(0) != '\0') ;
-        System.out.println("Finished waiting.");
+        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 6096);
+        buffer.clear();
+        buffer.put(bytes);
 
     }
 
