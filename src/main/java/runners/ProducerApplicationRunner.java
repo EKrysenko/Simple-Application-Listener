@@ -13,7 +13,7 @@ public class ProducerApplicationRunner {
     private static final String SHARED_MEMORY_PATH = "/dev/shm/image-cache";
     private static final String RECEIVED_FILE = "./received.txt";
     private static final String SEND_FILE = "./send.txt";
-    private static final String NAMED_PIPE = "/home/egor/COBOL_WORKS/test_fifo/TEMP/FILE.in";
+    private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
 
     public void runCobolApp() {
 
@@ -24,30 +24,33 @@ public class ProducerApplicationRunner {
     private void executeApp() {
 
         Scheduler scheduler = new Scheduler(NAMED_PIPE);
+
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
 
             long start = System.nanoTime();
 
-            writeToSHM(channel);
+            writeToSHM(channel, getOutputChars(SEND_FILE));
             scheduler.setCommand(0);
             if (scheduler.getCommand() == 1) {
                 readSHM(channel);
             }
+
             long finish = System.nanoTime();
+
             System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void writeToSHM(FileChannel channel) throws Exception {
+    private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
 
         MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 609600);
         CharBuffer charBuffer = buffer.asCharBuffer();
         charBuffer.clear();
 
-        charBuffer.put(getOutputChars(SEND_FILE));
+        charBuffer.put(outputChars);
     }
 
     private void readSHM(FileChannel channel) throws IOException {
@@ -63,7 +66,7 @@ public class ProducerApplicationRunner {
 
     private void writeReceivedToTextFile(char[] received) {
 
-        try(FileWriter writer = new FileWriter(RECEIVED_FILE)) {
+        try (FileWriter writer = new FileWriter(RECEIVED_FILE)) {
 
             writer.write(received);
             writer.flush();
