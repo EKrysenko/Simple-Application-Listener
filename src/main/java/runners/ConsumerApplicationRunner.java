@@ -16,6 +16,7 @@ public class ConsumerApplicationRunner {
     private static final String PATH = "/dev/shm/image-cache";
     private static final String MODE = "rw";
     private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
+    private static final int SIZE = 74883500;
 
     public void runCobolApp() throws FileNotFoundException {
 
@@ -48,9 +49,9 @@ public class ConsumerApplicationRunner {
 
     private char[] readFromSHM(FileChannel channel) throws IOException {
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 609600);
+        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
         CharBuffer charBuf = buffer.asCharBuffer();
-        char[] received = new char[4096];
+        char[] received = new char[SIZE/2];
 
         charBuf.get(received);
 
@@ -60,7 +61,7 @@ public class ConsumerApplicationRunner {
     private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
 
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 609600);
+        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
         CharBuffer charBuffer = buffer.asCharBuffer();
         charBuffer.clear();
 
