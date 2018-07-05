@@ -27,11 +27,15 @@ public class ProducerApplicationRunner {
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
 
+            long start = System.nanoTime();
+
             writeToSHM(channel);
             scheduler.setCommand(0);
             if (scheduler.getCommand() == 1) {
                 readSHM(channel);
             }
+            long finish = System.nanoTime();
+            System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
         } catch (Exception e) {
             e.printStackTrace();
         }
