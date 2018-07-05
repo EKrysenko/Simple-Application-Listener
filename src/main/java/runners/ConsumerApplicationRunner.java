@@ -1,5 +1,7 @@
 package runners;
 
+import scheduler.Scheduler;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -13,6 +15,8 @@ public class ConsumerApplicationRunner {
 
     private static final String PATH = "/dev/shm/image-cache";
     private static final String MODE = "rw";
+    public static final String NAMED_PIPE = "/home/egor/COBOL_WORKS/test_fifo/TEMP/FILE.in";
+    Scheduler scheduler = new Scheduler(NAMED_PIPE);
 
 
     public void runCobolApp() throws FileNotFoundException {
@@ -22,7 +26,7 @@ public class ConsumerApplicationRunner {
     }
 
     private void executeApp() throws FileNotFoundException {
-
+        if (scheduler.getCommand() == 0) {
         RandomAccessFile sharedMemory = new RandomAccessFile(PATH, MODE);
 
         try (FileChannel channel = sharedMemory.getChannel()) {
@@ -35,6 +39,9 @@ public class ConsumerApplicationRunner {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+            scheduler.setCommand(1);
         }
     }
 
