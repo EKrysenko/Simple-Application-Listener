@@ -13,7 +13,7 @@ public class ProducerApplicationRunner {
     private static final String SHARED_MEMORY_PATH = "/dev/shm/image-cache";
     private static final String RECEIVED_FILE = "./received.txt";
     private static final String SEND_FILE = "./send.txt";
-    private static final String NAMED_PIPE = "/home/egor/COBOL_WORKS/test_fifo/TEMP/FILE.in";
+    private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
 
     public void runCobolApp() {
 
