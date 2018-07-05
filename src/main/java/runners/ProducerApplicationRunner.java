@@ -2,15 +2,14 @@ package runners;
 
 import scheduler.Scheduler;
 
-import java.io.*;
-import java.nio.CharBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class ProducerApplicationRunner {
 
-    private static final String SHARED_MEMORY_PATH = "/dev/shm/image-cache";
+    private static final String HDD_PATH = "/home/uliana/Documents/lgi/docker/benchmarks/results/buffertext.txt";
     private static final String RECEIVED_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/received.txt";
     private static final String SEND_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/send.txt";
     private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
@@ -25,50 +24,32 @@ public class ProducerApplicationRunner {
 
         Scheduler scheduler = new Scheduler(NAMED_PIPE);
 
-        try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
-             FileChannel channel = sharedMemory.getChannel()) {
+        char[] bufferChars = readFile(SEND_FILE);
 
-            long start = System.nanoTime();
+        long start = System.nanoTime();
 
-            writeToSHM(channel, getOutputChars(SEND_FILE));
-            scheduler.setCommand(0);
-            if (scheduler.getCommand() == 1) {
-                readSHM(channel);
-            }
+        writeToFile(HDD_PATH, bufferChars);
 
-            long finish = System.nanoTime();
+        scheduler.setCommand(0);
 
-            System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (scheduler.getCommand() == 1) {
+            bufferChars = readFile(HDD_PATH);
+        } else {
+            bufferChars = "no data received".toCharArray();
         }
+
+        long finish = System.nanoTime();
+        writeToFile(RECEIVED_FILE, bufferChars);
+
+        System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
     }
 
-    private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 74883500);
-        CharBuffer charBuffer = buffer.asCharBuffer();
-        charBuffer.clear();
+    private void writeToFile(String path, char[] outputChars) {
 
-        charBuffer.put(outputChars);
-    }
+        try (FileWriter writer = new FileWriter(path)) {
 
-    private void readSHM(FileChannel channel) throws IOException {
-
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 74883500);
-        CharBuffer charBuf = buffer.asCharBuffer();
-        char[] received = new char[4096];
-
-        charBuf.get(received);
-
-        writeReceivedToTextFile(received);
-    }
-
-    private void writeReceivedToTextFile(char[] received) {
-
-        try (FileWriter writer = new FileWriter(RECEIVED_FILE)) {
-
-            writer.write(received);
+            writer.write(outputChars);
             writer.flush();
 
         } catch (IOException e) {
@@ -76,7 +57,7 @@ public class ProducerApplicationRunner {
         }
     }
 
-    private char[] getOutputChars(String path) throws IOException {
+    private char[] readFile(String path) {
 
         String line;
         StringBuilder builder = new StringBuilder();
@@ -84,6 +65,8 @@ public class ProducerApplicationRunner {
             while ((line = br.readLine()) != null) {
                 builder.append(line).append("\n");
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return builder.toString().toCharArray();
