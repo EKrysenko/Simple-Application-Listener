@@ -1,12 +1,11 @@
-import runners.ConsumerApplicationRunner;
-
-import java.io.FileNotFoundException;
+import runners.ProducerApplicationRunner;
 
 public class Main {
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws Exception {
 
-        ConsumerApplicationRunner runner = new ConsumerApplicationRunner();
+        ProducerApplicationRunner runner = new ProducerApplicationRunner();
+
         runner.runCobolApp();
 
     }
