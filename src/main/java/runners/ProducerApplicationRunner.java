@@ -11,8 +11,8 @@ import java.nio.channels.FileChannel.MapMode;
 public class ProducerApplicationRunner {
 
     private static final String SHARED_MEMORY_PATH = "/dev/shm/image-cache";
-    private static final String RECEIVED_FILE = "./received.txt";
-    private static final String SEND_FILE = "./send.txt";
+    private static final String RECEIVED_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/received.txt";
+    private static final String SEND_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/send.txt";
     private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
 
     public void runCobolApp() {
