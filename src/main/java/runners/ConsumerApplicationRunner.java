@@ -1,10 +1,11 @@
 package runners;
 
-import scheduler.Scheduler;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -17,6 +18,9 @@ public class ConsumerApplicationRunner {
     private static final String MODE = "rw";
     private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
     private static final int SIZE = 74883500;
+    private static final String TCP_HOST = "localhost";
+    private static final int TCP_CONSUMER_PORT = 8000;
+    private static final int TCP_PRODUCER_PORT = 9000;
 
     public void runCobolApp() throws FileNotFoundException {
 
@@ -25,25 +29,31 @@ public class ConsumerApplicationRunner {
     }
 
     private void executeApp() throws FileNotFoundException {
-        Scheduler scheduler = new Scheduler(NAMED_PIPE);
 
-        if (scheduler.getCommand() == 0) {
-        RandomAccessFile sharedMemory = new RandomAccessFile(PATH, MODE);
+        String readData;
 
-        try (FileChannel channel = sharedMemory.getChannel()) {
+        try (ServerSocket serverSocket = new ServerSocket(TCP_CONSUMER_PORT)) {
 
-            char[] inputChars = readFromSHM(channel);
+//            long start = System.nanoTime();
 
-            // TODO: here we can add some logic to change input data before sending
+            Socket client = serverSocket.accept();
+            try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream())) {
+                readData = dataInputStream.readUTF();
+            }
 
-            writeToSHM(channel, inputChars);
+            try (Socket socket = new Socket(TCP_HOST, TCP_PRODUCER_PORT);
+                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream())) {
+                dataOutputStream.writeUTF(readData);
+                dataOutputStream.flush();
+            }
 
+//            long finish = System.nanoTime();
+
+//            System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-            scheduler.setCommand(1);
-        }
     }
 
 
