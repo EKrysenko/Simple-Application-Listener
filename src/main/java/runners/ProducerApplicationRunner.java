@@ -1,8 +1,8 @@
 package runners;
 
-import scheduler.Scheduler;
-
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -12,9 +12,12 @@ public class ProducerApplicationRunner {
 
     private static final int SIZE = 74883500;
     private static final String SHARED_MEMORY_PATH = "/dev/shm/image-cache";
-    private static final String RECEIVED_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/received.txt";
-    private static final String SEND_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/send.txt";
+    private static final String RECEIVED_FILE = "./received.txt";
+    private static final String SEND_FILE = "./send.txt";
     private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
+    private static final String TCP_HOST = "localhost";
+    private static final int TCP_CONSUMER_PORT = 8000;
+    private static final int TCP_PRODUCER_PORT = 9000;
 
     public void runCobolApp() {
 
@@ -24,29 +27,31 @@ public class ProducerApplicationRunner {
 
     private void executeApp() {
 
-        Scheduler scheduler = new Scheduler(NAMED_PIPE);
+        String sendData = getOutputString(SEND_FILE);
+        String readData;
 
-        try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
-             FileChannel channel = sharedMemory.getChannel()) {
-            char[] charBuffer = getOutputChars(SEND_FILE);
+        try (Socket socket = new Socket(TCP_HOST, TCP_CONSUMER_PORT);
+             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+             ServerSocket serverSocket = new ServerSocket(TCP_PRODUCER_PORT)) {
 
             long start = System.nanoTime();
 
-            writeToSHM(channel, charBuffer);
-            scheduler.setCommand(0);
+            dataOutputStream.writeUTF(sendData);
+            dataOutputStream.flush();
 
-            if (scheduler.getCommand() == 1) {
-                charBuffer = readSHM(channel);
-            } else {
-                charBuffer = "no data received".toCharArray();
+            Socket client = serverSocket.accept();
+            try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream())) {
+                readData = dataInputStream.readUTF();
             }
 
             long finish = System.nanoTime();
-            writeReceivedToTextFile(charBuffer);
+
             System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
+            writeReceivedToTextFile(readData.toCharArray());
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
@@ -82,7 +87,7 @@ public class ProducerApplicationRunner {
         }
     }
 
-    private char[] getOutputChars(String path) throws IOException {
+    private String getOutputString(String path) {
 
         String line;
         StringBuilder builder = new StringBuilder();
@@ -90,9 +95,11 @@ public class ProducerApplicationRunner {
             while ((line = br.readLine()) != null) {
                 builder.append(line).append("\n");
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        return builder.toString().toCharArray();
+        return builder.toString();
     }
 
 }
