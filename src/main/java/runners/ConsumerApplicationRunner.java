@@ -15,9 +15,7 @@ public class ConsumerApplicationRunner {
 
     private static final String PATH = "/dev/shm/image-cache";
     private static final String MODE = "rw";
-    public static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
-    Scheduler scheduler = new Scheduler(NAMED_PIPE);
-
+    private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
 
     public void runCobolApp() throws FileNotFoundException {
 
@@ -26,6 +24,8 @@ public class ConsumerApplicationRunner {
     }
 
     private void executeApp() throws FileNotFoundException {
+        Scheduler scheduler = new Scheduler(NAMED_PIPE);
+
         if (scheduler.getCommand() == 0) {
         RandomAccessFile sharedMemory = new RandomAccessFile(PATH, MODE);
 
