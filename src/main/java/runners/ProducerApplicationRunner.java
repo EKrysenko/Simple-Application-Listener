@@ -27,17 +27,21 @@ public class ProducerApplicationRunner {
 
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
+            char[] charBuffer = getOutputChars(SEND_FILE);
 
             long start = System.nanoTime();
 
-            writeToSHM(channel, getOutputChars(SEND_FILE));
+            writeToSHM(channel, charBuffer);
             scheduler.setCommand(0);
+
             if (scheduler.getCommand() == 1) {
-                readSHM(channel);
+                charBuffer = readSHM(channel);
+            } else {
+                charBuffer = "no data received".toCharArray();
             }
 
             long finish = System.nanoTime();
-
+            writeReceivedToTextFile(charBuffer);
             System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,7 +57,7 @@ public class ProducerApplicationRunner {
         charBuffer.put(outputChars);
     }
 
-    private void readSHM(FileChannel channel) throws IOException {
+    private char[] readSHM(FileChannel channel) throws IOException {
 
         MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 74883500);
         CharBuffer charBuf = buffer.asCharBuffer();
@@ -61,7 +65,7 @@ public class ProducerApplicationRunner {
 
         charBuf.get(received);
 
-        writeReceivedToTextFile(received);
+        return received;
     }
 
     private void writeReceivedToTextFile(char[] received) {
