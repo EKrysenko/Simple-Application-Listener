@@ -46,7 +46,7 @@ public class ProducerApplicationRunner {
 
     private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 7488350);
+        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 74883500);
         CharBuffer charBuffer = buffer.asCharBuffer();
         charBuffer.clear();
 
@@ -55,7 +55,7 @@ public class ProducerApplicationRunner {
 
     private void readSHM(FileChannel channel) throws IOException {
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 7488350);
+        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 74883500);
         CharBuffer charBuf = buffer.asCharBuffer();
         char[] received = new char[4096];
 
