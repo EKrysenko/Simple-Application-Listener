@@ -10,6 +10,7 @@ import java.nio.channels.FileChannel.MapMode;
 
 public class ProducerApplicationRunner {
 
+    private static final int SIZE = 74883500;
     private static final String SHARED_MEMORY_PATH = "/dev/shm/image-cache";
     private static final String RECEIVED_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/received.txt";
     private static final String SEND_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/send.txt";
@@ -50,7 +51,7 @@ public class ProducerApplicationRunner {
 
     private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 74883500);
+        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
         CharBuffer charBuffer = buffer.asCharBuffer();
         charBuffer.clear();
 
@@ -59,9 +60,10 @@ public class ProducerApplicationRunner {
 
     private char[] readSHM(FileChannel channel) throws IOException {
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 74883500);
+
+        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
         CharBuffer charBuf = buffer.asCharBuffer();
-        char[] received = new char[4096];
+        char[] received = new char[SIZE/2];
 
         charBuf.get(received);
 
