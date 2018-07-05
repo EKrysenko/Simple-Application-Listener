@@ -23,15 +23,15 @@ public class ConsumerApplicationRunner {
 
     private void executeApp() throws FileNotFoundException {
 
-        RandomAccessFile file = new RandomAccessFile(PATH, MODE);
+        RandomAccessFile sharedMemory = new RandomAccessFile(PATH, MODE);
 
-        try (FileChannel channel = file.getChannel()) {
+        try (FileChannel channel = sharedMemory.getChannel()) {
 
-            char[] inputChars = readFile(channel);
+            char[] inputChars = readFromSHM(channel);
 
             // TODO: here we can add some logic to change input data before sending
 
-            writeToFile(channel, inputChars);
+            writeToSHM(channel, inputChars);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,7 +39,7 @@ public class ConsumerApplicationRunner {
     }
 
 
-    private char[] readFile(FileChannel channel) throws IOException {
+    private char[] readFromSHM(FileChannel channel) throws IOException {
 
         MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 609600);
         CharBuffer charBuf = buffer.asCharBuffer();
@@ -50,7 +50,7 @@ public class ConsumerApplicationRunner {
         return received;
     }
 
-    private void writeToFile(FileChannel channel, char[] outputChars) throws Exception {
+    private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
 
 
         MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, 609600);
