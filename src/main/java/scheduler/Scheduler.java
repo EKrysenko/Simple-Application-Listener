@@ -21,7 +21,7 @@ public class Scheduler {
 
     public void setCommand(int command) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
-            bw.write(command);
+            bw.write(String.valueOf(command));
             this.command = command;
         } catch (IOException e) {
             e.printStackTrace();
