@@ -15,7 +15,7 @@ public class ConsumerApplicationRunner {
 
     private static final String PATH = "/dev/shm/image-cache";
     private static final String MODE = "rw";
-    public static final String NAMED_PIPE = "/home/egor/COBOL_WORKS/test_fifo/TEMP/FILE.in";
+    public static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
     Scheduler scheduler = new Scheduler(NAMED_PIPE);
 
 
