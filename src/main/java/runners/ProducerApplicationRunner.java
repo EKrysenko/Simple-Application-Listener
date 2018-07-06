@@ -32,23 +32,17 @@ public class ProducerApplicationRunner {
 
             long start = System.nanoTime();
 
-//            System.out.println("start write");
             writeToSHM(channel, charBuffer);
             scheduler.sendMessage(0);
-//            System.out.println("stop write");
 
             if (scheduler.getCommand() == 1) {
-//                System.out.println("start read");
                 charBuffer = readFromSHM(channel, scheduler.getSizeCharArray());
-//                System.out.println("stop read");
             } else {
                 charBuffer = "no data received".toCharArray();
             }
 
-//            System.out.println("ending benchmark...");
             long finish = System.nanoTime();
 
-//            System.out.println("start writing to text file");
             writeReceivedToTextFile(charBuffer);
             System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
         } catch (Exception e) {
@@ -58,13 +52,11 @@ public class ProducerApplicationRunner {
 
     private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
 
-//        System.out.println("start writing in writeToSHM()");
         MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
         CharBuffer charBuffer = buffer.asCharBuffer();
         charBuffer.clear();
 
         charBuffer.put(outputChars);
-//        System.out.println("stop writing in writeToSHM()");
     }
 
     private char[] readFromSHM(FileChannel channel, int sizeCharArray) throws IOException {

@@ -27,15 +27,12 @@ public class Scheduler {
 
     public void sendMessage(int command) {
 
-//        System.out.println("start sending in sendMessage()");
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(path))) {
-//            System.out.println("before write in sendMessage()");
             bw.write(String.valueOf(sizeCharArray * 10 + command));
             this.command = command;
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        System.out.println("stop sending in sendMessage()");
     }
 
     public int getSizeCharArray() {
