@@ -27,8 +27,6 @@ public class ConsumerApplicationRunner {
 
         Scheduler scheduler = new Scheduler(NAMED_PIPE);
 
-        //System.out.println("before reading from pipe");
-
         if (scheduler.getCommand() == 0) {
 
             try (RandomAccessFile sharedMemory = new RandomAccessFile(PATH, MODE);
