@@ -10,11 +10,11 @@ import java.nio.channels.FileChannel.MapMode;
 
 public class ProducerApplicationRunner {
 
-    private static final int SIZE = 74883500;
+    private static final int SIZE = 748835;
     private static final String SHARED_MEMORY_PATH = "/dev/shm/image-cache";
-    private static final String RECEIVED_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/received.txt";
-    private static final String SEND_FILE = "/home/uliana/Documents/lgi/docker/benchmarks/results/send.txt";
-    private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
+    private static final String RECEIVED_FILE = "./received.txt";
+    private static final String SEND_FILE = "./send.txt";
+    private static final String NAMED_PIPE = "/home/egor/COBOL_WORKS/LGI-HRWD/work_dir/FILE.in";
 
     public void runCobolApp() {
 
@@ -24,24 +24,25 @@ public class ProducerApplicationRunner {
 
     private void executeApp() {
 
-        Scheduler scheduler = new Scheduler(NAMED_PIPE);
+        char[] charBuffer = getOutputChars(SEND_FILE);
+        Scheduler scheduler = new Scheduler(NAMED_PIPE, charBuffer.length);
 
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
-            char[] charBuffer = getOutputChars(SEND_FILE);
 
             long start = System.nanoTime();
 
             writeToSHM(channel, charBuffer);
-            scheduler.setCommand(0);
+            scheduler.sendMessage(0);
 
             if (scheduler.getCommand() == 1) {
-                charBuffer = readSHM(channel);
+                charBuffer = readFromSHM(channel, scheduler.getSizeCharArray());
             } else {
                 charBuffer = "no data received".toCharArray();
             }
 
             long finish = System.nanoTime();
+
             writeReceivedToTextFile(charBuffer);
             System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
         } catch (Exception e) {
@@ -58,15 +59,13 @@ public class ProducerApplicationRunner {
         charBuffer.put(outputChars);
     }
 
-    private char[] readSHM(FileChannel channel) throws IOException {
-
+    private char[] readFromSHM(FileChannel channel, int sizeCharArray) throws IOException {
 
         MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
         CharBuffer charBuf = buffer.asCharBuffer();
-        char[] received = new char[SIZE/2];
+        char[] received = new char[sizeCharArray];
 
         charBuf.get(received);
-
         return received;
     }
 
@@ -82,7 +81,7 @@ public class ProducerApplicationRunner {
         }
     }
 
-    private char[] getOutputChars(String path) throws IOException {
+    private char[] getOutputChars(String path) {
 
         String line;
         StringBuilder builder = new StringBuilder();
@@ -90,6 +89,8 @@ public class ProducerApplicationRunner {
             while ((line = br.readLine()) != null) {
                 builder.append(line).append("\n");
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return builder.toString().toCharArray();
