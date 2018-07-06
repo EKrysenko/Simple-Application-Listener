@@ -15,8 +15,8 @@ public class ConsumerApplicationRunner {
 
     private static final String PATH = "/dev/shm/image-cache";
     private static final String MODE = "rw";
-    private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
-    private static final int SIZE = 74883500;
+    private static final String NAMED_PIPE = "/home/egor/COBOL_WORKS/LGI-HRWD/work_dir/FILE.in";
+    private static final int SIZE = 748835;
 
     public void runCobolApp() throws FileNotFoundException {
 
@@ -32,7 +32,7 @@ public class ConsumerApplicationRunner {
 
         try (FileChannel channel = sharedMemory.getChannel()) {
 
-            char[] inputChars = readFromSHM(channel);
+            char[] inputChars = readFromSHM(channel, scheduler.getSizeCharArray());
 
             // TODO: here we can add some logic to change input data before sending
 
@@ -42,19 +42,18 @@ public class ConsumerApplicationRunner {
             e.printStackTrace();
         }
 
-            scheduler.setCommand(1);
+            scheduler.sendMessage(1);
         }
     }
 
 
-    private char[] readFromSHM(FileChannel channel) throws IOException {
+    private char[] readFromSHM(FileChannel channel, int sizeCharArray) throws IOException {
 
         MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
         CharBuffer charBuf = buffer.asCharBuffer();
-        char[] received = new char[SIZE/2];
+        char[] received = new char[sizeCharArray];
 
         charBuf.get(received);
-
         return received;
     }
 
