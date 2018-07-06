@@ -2,7 +2,6 @@ package runners;
 
 import scheduler.Scheduler;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.CharBuffer;
@@ -18,19 +17,21 @@ public class ConsumerApplicationRunner {
     private static final String NAMED_PIPE = "/home/egor/COBOL_WORKS/LGI-HRWD/work_dir/FILE.in";
     private static final int SIZE = 748835;
 
-    public void runCobolApp() throws FileNotFoundException {
+    public void runCobolApp() {
 
         executeApp();
 
     }
 
-    private void executeApp() throws FileNotFoundException {
+    private void executeApp() {
+
         Scheduler scheduler = new Scheduler(NAMED_PIPE);
 
         if (scheduler.getCommand() == 0) {
-        RandomAccessFile sharedMemory = new RandomAccessFile(PATH, MODE);
 
-        try (FileChannel channel = sharedMemory.getChannel()) {
+
+        try (RandomAccessFile sharedMemory = new RandomAccessFile(PATH, MODE);
+             FileChannel channel = sharedMemory.getChannel()) {
 
             char[] inputChars = readFromSHM(channel, scheduler.getSizeCharArray());
 
@@ -58,7 +59,6 @@ public class ConsumerApplicationRunner {
     }
 
     private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
-
 
         MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
         CharBuffer charBuffer = buffer.asCharBuffer();
