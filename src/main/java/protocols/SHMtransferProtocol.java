@@ -37,7 +37,7 @@ public class SHMtransferProtocol implements TransferProtocol {
             long finish = System.nanoTime();
 
             writeReceivedToTextFile(charBuffer);
-            System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
+            System.out.println((finish - start) / 1e6);
         } catch (Exception e) {
             e.printStackTrace();
         }
