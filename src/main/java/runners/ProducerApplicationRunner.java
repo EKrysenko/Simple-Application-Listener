@@ -3,21 +3,15 @@ package runners;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.CharBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
 
 public class ProducerApplicationRunner {
 
-    private static final int SIZE = 74883500;
-    private static final String SHARED_MEMORY_PATH = "/dev/shm/image-cache";
     private static final String RECEIVED_FILE = "./received.txt";
-    private static final String SEND_FILE = "./send.txt";
-    private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
+    private static final String SEND_FILE = "./send_50.txt";
     private static final String TCP_HOST = "localhost";
     private static final int TCP_CONSUMER_PORT = 8000;
     private static final int TCP_PRODUCER_PORT = 9000;
+    static final int BLOCK_SIZE = 60_000;
 
     public void runCobolApp() {
 
@@ -36,12 +30,11 @@ public class ProducerApplicationRunner {
 
             long start = System.nanoTime();
 
-            dataOutputStream.writeUTF(sendData);
-            dataOutputStream.flush();
+            writeTCP(sendData, dataOutputStream);
 
             Socket client = serverSocket.accept();
             try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream())) {
-                readData = dataInputStream.readUTF();
+                readData = readTCP(dataInputStream);
             }
 
             long finish = System.nanoTime();
@@ -54,25 +47,30 @@ public class ProducerApplicationRunner {
 
     }
 
-    private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
+    private void writeTCP(String sendData, DataOutputStream dataOutputStream) throws IOException {
+        int stringLength = sendData.length();
+        int number = stringLength / BLOCK_SIZE;
+        dataOutputStream.writeInt(number);
+        String[] stringArr = new String[number];
 
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
-        CharBuffer charBuffer = buffer.asCharBuffer();
-        charBuffer.clear();
-
-        charBuffer.put(outputChars);
+        for (int i = 0; i < number; i++) {
+            final int beginIndex = i * BLOCK_SIZE;
+            final int lastInd = beginIndex + BLOCK_SIZE;
+            if (lastInd > stringLength)
+                stringArr[i] = sendData.substring(beginIndex, stringLength);
+            else
+                stringArr[i] = sendData.substring(beginIndex, lastInd);
+            dataOutputStream.writeUTF(stringArr[i]);
+        }
+        dataOutputStream.flush();
     }
 
-    private char[] readSHM(FileChannel channel) throws IOException {
-
-
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
-        CharBuffer charBuf = buffer.asCharBuffer();
-        char[] received = new char[SIZE/2];
-
-        charBuf.get(received);
-
-        return received;
+    private String readTCP(DataInputStream dataInputStream) throws IOException {
+        final int len = dataInputStream.readInt();
+        final StringBuilder sb = new StringBuilder(len * BLOCK_SIZE);
+        for (int i = 0; i < len; i++)
+            sb.append(dataInputStream.readUTF());
+        return sb.toString();
     }
 
     private void writeReceivedToTextFile(char[] received) {
