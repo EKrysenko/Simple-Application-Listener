@@ -14,8 +14,8 @@ public class ConsumerApplicationRunner {
 
     private static final String PATH = "/dev/shm/image-cache";
     private static final String MODE = "rw";
-    private static final String NAMED_PIPE = "/home/egor/COBOL_WORKS/LGI-HRWD/work_dir/FILE.in";
-    private static final int SIZE = 748835;
+    private static final String NAMED_PIPE = "/home/uliana/Documents/lgi/docker/FILE.in";
+    private static final int SIZE = 500000000;
 
     public void runCobolApp() {
 
@@ -27,21 +27,22 @@ public class ConsumerApplicationRunner {
 
         Scheduler scheduler = new Scheduler(NAMED_PIPE);
 
+        //System.out.println("before reading from pipe");
+
         if (scheduler.getCommand() == 0) {
 
+            try (RandomAccessFile sharedMemory = new RandomAccessFile(PATH, MODE);
+                 FileChannel channel = sharedMemory.getChannel()) {
 
-        try (RandomAccessFile sharedMemory = new RandomAccessFile(PATH, MODE);
-             FileChannel channel = sharedMemory.getChannel()) {
+                char[] inputChars = readFromSHM(channel, scheduler.getSizeCharArray());
 
-            char[] inputChars = readFromSHM(channel, scheduler.getSizeCharArray());
+                // TODO: here we can add some logic to change input data before sending
 
-            // TODO: here we can add some logic to change input data before sending
+                writeToSHM(channel, inputChars);
 
-            writeToSHM(channel, inputChars);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             scheduler.sendMessage(1);
         }
