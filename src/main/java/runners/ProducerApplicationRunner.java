@@ -41,7 +41,7 @@ public class ProducerApplicationRunner {
         long finish = System.nanoTime();
         writeToFile(RECEIVED_FILE, bufferChars);
 
-        System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
+        System.out.println((finish - start) / 1e6);
     }
 
 
