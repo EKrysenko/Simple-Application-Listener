@@ -26,9 +26,7 @@ public class ConsumerApplicationRunner {
         try (ServerSocket serverSocket = new ServerSocket(TCP_CONSUMER_PORT)) {
 
             Socket client = serverSocket.accept();
-            try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream())) {
-                readData = readTCP(dataInputStream);
-            }
+            readData = readTCP(client);
 
             try (Socket socket = new Socket(TCP_HOST, TCP_PRODUCER_PORT);
                  DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream())) {
@@ -59,11 +57,14 @@ public class ConsumerApplicationRunner {
         dataOutputStream.flush();
     }
 
-    private String readTCP(DataInputStream dataInputStream) throws IOException {
-        final int len = dataInputStream.readInt();
-        final StringBuilder sb = new StringBuilder(len * BLOCK_SIZE);
-        for (int i = 0; i < len; i++)
-            sb.append(dataInputStream.readUTF());
+    private String readTCP(Socket client) throws IOException {
+        final StringBuilder sb;
+        try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream())) {
+            final int len = dataInputStream.readInt();
+            sb = new StringBuilder(len * BLOCK_SIZE);
+            for (int i = 0; i < len; i++)
+                sb.append(dataInputStream.readUTF());
+        }
         return sb.toString();
     }
 
