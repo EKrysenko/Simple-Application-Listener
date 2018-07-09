@@ -5,6 +5,7 @@ import interfaces.TransferProtocol;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 
 import static constants.Constants.*;
 
@@ -12,7 +13,8 @@ public class TCPtransferProtocol implements TransferProtocol {
 
     @Override
     public void executeProducer() {
-        String sendData = getOutputString(SEND_FILE);
+
+        String sendData = Arrays.toString(readFile(SEND_FILE));
         String readData;
 
         try (Socket socket = new Socket(TCP_HOST, TCP_CONSUMER_PORT);
@@ -85,7 +87,6 @@ public class TCPtransferProtocol implements TransferProtocol {
         return sb.toString();
     }
 
-
     private void writeToFile(char[] received) {
 
         try (FileWriter writer = new FileWriter(RECEIVED_FILE)) {
@@ -96,21 +97,6 @@ public class TCPtransferProtocol implements TransferProtocol {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private String getOutputString(String path) {
-
-        String line;
-        StringBuilder builder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            while ((line = br.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return builder.toString();
     }
 
 }

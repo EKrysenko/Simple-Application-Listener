@@ -35,7 +35,7 @@ public interface TransferProtocol {
         }
     }
 
-    default String readFile(String path) {
+    default char[] readFile(String path) {
 
         String line;
         StringBuilder builder = new StringBuilder();
@@ -47,7 +47,7 @@ public interface TransferProtocol {
             e.printStackTrace();
         }
 
-        return builder.toString();
+        return builder.toString().toCharArray();
     }
 
 

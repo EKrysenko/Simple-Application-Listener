@@ -12,7 +12,7 @@ public class HDDtransferProtocol implements TransferProtocol {
 
         Scheduler scheduler = new Scheduler(NAMED_PIPE);
 
-        char[] bufferChars = readFile(SEND_FILE).toCharArray();
+        char[] bufferChars = readFile(SEND_FILE);
 
         long start = System.nanoTime();
 
@@ -21,7 +21,7 @@ public class HDDtransferProtocol implements TransferProtocol {
         scheduler.sendMessage(0);
 
         if (scheduler.getCommand() == 1) {
-            bufferChars = readFile(HDD_PATH).toCharArray();
+            bufferChars = readFile(HDD_PATH);
         } else {
             bufferChars = "no data received".toCharArray();
         }
@@ -40,7 +40,7 @@ public class HDDtransferProtocol implements TransferProtocol {
         if (scheduler.getCommand() == 0) {
 
 
-            char[] inputChars = readFile(HDD_PATH).toCharArray();
+            char[] inputChars = readFile(HDD_PATH);
 
             // TODO: here we can add some logic to change input data before sending
 
@@ -49,7 +49,5 @@ public class HDDtransferProtocol implements TransferProtocol {
             scheduler.sendMessage(1);
         }
     }
-
-
 
 }

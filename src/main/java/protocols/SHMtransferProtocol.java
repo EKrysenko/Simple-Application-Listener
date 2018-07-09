@@ -18,7 +18,7 @@ public class SHMtransferProtocol implements TransferProtocol {
     @Override
     public void executeProducer() {
 
-        char[] charBuffer = readFile(Constants.SEND_FILE).toCharArray();
+        char[] charBuffer = readFile(Constants.SEND_FILE);
         Scheduler scheduler = new Scheduler(NAMED_PIPE, charBuffer.length);
 
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
