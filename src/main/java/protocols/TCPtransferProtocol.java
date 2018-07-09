@@ -30,7 +30,7 @@ public class TCPtransferProtocol implements TransferProtocol {
             long finish = System.nanoTime();
 
             System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
-            writeReceivedToTextFile(readData.toCharArray());
+            writeToFile(readData.toCharArray());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -86,7 +86,7 @@ public class TCPtransferProtocol implements TransferProtocol {
     }
 
 
-    private void writeReceivedToTextFile(char[] received) {
+    private void writeToFile(char[] received) {
 
         try (FileWriter writer = new FileWriter(RECEIVED_FILE)) {
 

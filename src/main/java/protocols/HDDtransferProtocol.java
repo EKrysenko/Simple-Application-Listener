@@ -3,11 +3,6 @@ package protocols;
 import interfaces.TransferProtocol;
 import schedulers.Scheduler;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import static constants.Constants.*;
 
 public class HDDtransferProtocol implements TransferProtocol {
@@ -17,7 +12,7 @@ public class HDDtransferProtocol implements TransferProtocol {
 
         Scheduler scheduler = new Scheduler(NAMED_PIPE);
 
-        char[] bufferChars = readFile(SEND_FILE);
+        char[] bufferChars = readFile(SEND_FILE).toCharArray();
 
         long start = System.nanoTime();
 
@@ -26,7 +21,7 @@ public class HDDtransferProtocol implements TransferProtocol {
         scheduler.sendMessage(0);
 
         if (scheduler.getCommand() == 1) {
-            bufferChars = readFile(HDD_PATH);
+            bufferChars = readFile(HDD_PATH).toCharArray();
         } else {
             bufferChars = "no data received".toCharArray();
         }
@@ -45,7 +40,7 @@ public class HDDtransferProtocol implements TransferProtocol {
         if (scheduler.getCommand() == 0) {
 
 
-            char[] inputChars = readFile(HDD_PATH);
+            char[] inputChars = readFile(HDD_PATH).toCharArray();
 
             // TODO: here we can add some logic to change input data before sending
 
@@ -56,30 +51,5 @@ public class HDDtransferProtocol implements TransferProtocol {
     }
 
 
-    private char[] readFile(String path) {
 
-        String line;
-        StringBuilder builder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            while ((line = br.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return builder.toString().toCharArray();
-    }
-
-    private void writeToFile(String path, char[] outputChars) {
-
-        try (FileWriter writer = new FileWriter(path)) {
-
-            writer.write(outputChars);
-            writer.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
