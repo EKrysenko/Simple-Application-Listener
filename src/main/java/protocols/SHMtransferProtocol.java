@@ -4,7 +4,8 @@ import constants.Constants;
 import interfaces.TransferProtocol;
 import schedulers.Scheduler;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -17,7 +18,7 @@ public class SHMtransferProtocol implements TransferProtocol {
     @Override
     public void executeProducer() {
 
-        char[] charBuffer = getOutputChars(Constants.SEND_FILE);
+        char[] charBuffer = readFile(Constants.SEND_FILE);
         Scheduler scheduler = new Scheduler(NAMED_PIPE, charBuffer.length);
 
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
@@ -36,7 +37,7 @@ public class SHMtransferProtocol implements TransferProtocol {
 
             long finish = System.nanoTime();
 
-            writeReceivedToTextFile(charBuffer);
+            writeToFile(RECEIVED_FILE, charBuffer);
             System.out.println((finish - start) / 1e6);
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,32 +86,5 @@ public class SHMtransferProtocol implements TransferProtocol {
 
         charBuf.get(received);
         return received;
-    }
-
-    private void writeReceivedToTextFile(char[] received) {
-
-        try (FileWriter writer = new FileWriter(RECEIVED_FILE)) {
-
-            writer.write(received);
-            writer.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private char[] getOutputChars(String path) {
-
-        String line;
-        StringBuilder builder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            while ((line = br.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return builder.toString().toCharArray();
     }
 }

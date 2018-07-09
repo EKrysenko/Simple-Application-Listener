@@ -6,7 +6,9 @@ import protocols.TCPtransferProtocol;
 public class Main {
 
     public static void main(String[] args) {
+
         TransferProtocol transferProtocol;
+
         switch (args[0]) {
             case "TCP":
                 transferProtocol = new TCPtransferProtocol();
@@ -19,7 +21,8 @@ public class Main {
                 transferProtocol = new HDDtransferProtocol();
                 break;
             default:
-                System.out.println("Wrong input arguments. Should be %ProtocolName%, %ExecutorName%");
+                System.out.println("Wrong input arguments.\n"
+                        + "Use TCP/HDD/SHM for protocol and producer/consumer for executor");
                 return;
         }
 
