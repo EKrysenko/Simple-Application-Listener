@@ -3,11 +3,6 @@ package protocols;
 import interfaces.TransferProtocol;
 import schedulers.Scheduler;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import static constants.Constants.*;
 
 public class HDDtransferProtocol implements TransferProtocol {
@@ -55,31 +50,4 @@ public class HDDtransferProtocol implements TransferProtocol {
         }
     }
 
-
-    private char[] readFile(String path) {
-
-        String line;
-        StringBuilder builder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            while ((line = br.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return builder.toString().toCharArray();
-    }
-
-    private void writeToFile(String path, char[] outputChars) {
-
-        try (FileWriter writer = new FileWriter(path)) {
-
-            writer.write(outputChars);
-            writer.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
