@@ -31,7 +31,7 @@ public class TCPtransferProtocol implements TransferProtocol {
 
             long finish = System.nanoTime();
 
-            System.out.println("elapsed time is " + (finish - start) / 1e6 + " ms");
+            System.out.println((finish - start) / 1e6);
             writeToFile(readData.toCharArray());
         } catch (Exception e) {
             e.printStackTrace();
