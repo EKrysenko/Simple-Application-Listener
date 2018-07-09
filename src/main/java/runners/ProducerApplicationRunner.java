@@ -7,7 +7,7 @@ import java.net.Socket;
 public class ProducerApplicationRunner {
 
     private static final String RECEIVED_FILE = "./received.txt";
-    private static final String SEND_FILE = "./send_50.txt";
+    private static final String SEND_FILE = "./send_100.txt";
     private static final String TCP_HOST = "localhost";
     private static final int TCP_CONSUMER_PORT = 8000;
     private static final int TCP_PRODUCER_PORT = 9000;
@@ -33,9 +33,8 @@ public class ProducerApplicationRunner {
             writeTCP(sendData, dataOutputStream);
 
             Socket client = serverSocket.accept();
-            try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream())) {
-                readData = readTCP(dataInputStream);
-            }
+
+            readData = readTCP(client);
 
             long finish = System.nanoTime();
 
@@ -65,11 +64,14 @@ public class ProducerApplicationRunner {
         dataOutputStream.flush();
     }
 
-    private String readTCP(DataInputStream dataInputStream) throws IOException {
-        final int len = dataInputStream.readInt();
-        final StringBuilder sb = new StringBuilder(len * BLOCK_SIZE);
-        for (int i = 0; i < len; i++)
-            sb.append(dataInputStream.readUTF());
+    private String readTCP(Socket client) throws IOException {
+        final StringBuilder sb;
+        try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream())) {
+            final int len = dataInputStream.readInt();
+            sb = new StringBuilder(len * BLOCK_SIZE);
+            for (int i = 0; i < len; i++)
+                sb.append(dataInputStream.readUTF());
+        }
         return sb.toString();
     }
 
