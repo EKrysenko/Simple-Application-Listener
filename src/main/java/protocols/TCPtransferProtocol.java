@@ -97,17 +97,4 @@ public class TCPtransferProtocol implements TransferProtocol {
         }
     }
 
-    public String readFromFile(String path) {
-        String line;
-        StringBuilder builder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            while ((line = br.readLine()) != null) {
-                builder.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return builder.toString();
-    }
 }
