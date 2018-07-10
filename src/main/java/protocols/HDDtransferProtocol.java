@@ -10,7 +10,7 @@ public class HDDtransferProtocol implements TransferProtocol {
     @Override
      public void executeProducer() {
 
-        Scheduler scheduler = new Scheduler(NAMED_PIPE);
+        Scheduler scheduler = new Scheduler(INPUT_NAMED_PIPE);
 
         char[] bufferChars = readFile(SEND_FILE);
 
@@ -35,7 +35,7 @@ public class HDDtransferProtocol implements TransferProtocol {
 
     @Override
     public void executeConsumer() {
-        Scheduler scheduler = new Scheduler(NAMED_PIPE);
+        Scheduler scheduler = new Scheduler(INPUT_NAMED_PIPE);
 
         if (scheduler.getCommand() == 0) {
 

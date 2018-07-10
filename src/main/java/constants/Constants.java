@@ -7,6 +7,7 @@ import java.util.Properties;
 public class Constants {
 
     public static final int SIZE;
+    public static final int DATA_SIZE = 4;
     public static String SHARED_MEMORY_PATH;
     public static String HDD_PATH;
     public static String RECEIVED_FILE;
