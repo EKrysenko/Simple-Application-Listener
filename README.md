@@ -11,11 +11,22 @@ different protocols:
 **To run application and measure data transfer time successfully:**
 
 Prepare your environment:
-* make sure that Docker is installed on your computer: `docker -v`
-* create named pipe somewhere on your computer to use SHM and HDD protocols: `mkfifo <pipename>`
-* create empty buffer text file in any folder ("results" folder) to use HDD protocol: `touch <buffername>`
-* create empty text file in the "results" folder for producer to write received data into: `touch <receivedname>`
-* unzip send.zip archive file from 'benchmarks' folder to the "results" folder: `unzip send.zip`
+
+* make sure that Docker is installed on your computer: 
+
+    `docker -v`
+* create named pipe somewhere on your computer to use SHM and HDD protocols: 
+
+    `mkfifo <pipename>`
+* create empty buffer text file in any folder ("results" folder) to use HDD protocol: 
+
+    `touch <buffername>`
+* create empty text file in the "results" folder for producer to write received data into: 
+
+    `touch <receivedname>`
+* unzip send.zip archive file from 'benchmarks' folder to the "results" folder: 
+
+    `unzip send.zip`
 * place start.sh file in the "results" folder
 * fill property file "./config.properties" with your paths to pipename, buffername, receivedname and send.txt files
 * replace "shm", "pipe", "results" and "steps" variables values with your own in start.sh script
