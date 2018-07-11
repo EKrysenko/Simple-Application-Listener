@@ -3,9 +3,11 @@ import protocols.HDDtransferProtocol;
 import protocols.SHMtransferProtocol;
 import protocols.TCPtransferProtocol;
 
+import java.io.IOException;
+
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         TransferProtocol transferProtocol;
 
