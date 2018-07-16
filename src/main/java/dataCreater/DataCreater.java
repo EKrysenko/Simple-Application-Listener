@@ -9,7 +9,6 @@ public class DataCreater {
 
     public static String create(double capacityInKilobytes) throws UnsupportedEncodingException {
         StringBuilder stringBuilder = new StringBuilder();
-        ;
         byte[] initBytes;
         byte[] additionaryBytes;
         String string;
