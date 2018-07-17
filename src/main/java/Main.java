@@ -22,6 +22,9 @@ public class Main {
             case "HDD":
                 transferProtocol = new HDDtransferProtocol();
                 break;
+            case "CQ":
+                transferProtocol = new CQtransferProtocol();
+                break;
             default:
                 System.out.println("Wrong input arguments.\n"
                         + "Use TCP/HDD/SHM for protocol and producer/consumer for executor");
