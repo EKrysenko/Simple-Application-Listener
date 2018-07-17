@@ -36,6 +36,13 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>net.openhft</groupId>
+            <artifactId>chronicle-queue</artifactId>
+            <version>5.16.8</version>
+        </dependency>
+    </dependencies>
 
 
 </project>
