@@ -1,7 +1,6 @@
 package protocols;
 
 import constants.Constants;
-import interfaces.TransferProtocol;
 import schedulers.Scheduler;
 
 import java.io.IOException;

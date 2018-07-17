@@ -1,4 +1,4 @@
-import interfaces.TransferProtocol;
+import protocols.TransferProtocol;
 import protocols.CQtransferProtocol;
 import protocols.HDDtransferProtocol;
 import protocols.SHMtransferProtocol;

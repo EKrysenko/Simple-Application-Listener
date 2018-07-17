@@ -1,7 +1,6 @@
 package protocols;
 
 import dataCreater.DataCreater;
-import interfaces.TransferProtocol;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;

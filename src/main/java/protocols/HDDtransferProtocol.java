@@ -1,6 +1,5 @@
 package protocols;
 
-import interfaces.TransferProtocol;
 import schedulers.Scheduler;
 
 import static constants.Constants.*;

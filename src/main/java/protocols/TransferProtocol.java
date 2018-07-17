@@ -1,4 +1,4 @@
-package interfaces;
+package protocols;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
