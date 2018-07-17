@@ -1,5 +1,6 @@
 package protocols;
 
+import schedulers.NamedPipeScheduler;
 import schedulers.Scheduler;
 
 import static constants.Constants.*;
@@ -9,7 +10,7 @@ public class HDDtransferProtocol implements TransferProtocol {
     @Override
      public void executeProducer() {
 
-        Scheduler scheduler = new Scheduler(NAMED_PIPE);
+        Scheduler scheduler = new NamedPipeScheduler(NAMED_PIPE);
 
         char[] bufferChars = readFile(SEND_FILE);
 
@@ -34,7 +35,7 @@ public class HDDtransferProtocol implements TransferProtocol {
 
     @Override
     public void executeConsumer() {
-        Scheduler scheduler = new Scheduler(NAMED_PIPE);
+        NamedPipeScheduler scheduler = new NamedPipeScheduler(NAMED_PIPE);
 
         if (scheduler.getCommand() == 0) {
 

@@ -1,6 +1,7 @@
 package protocols;
 
 import constants.Constants;
+import schedulers.NamedPipeScheduler;
 import schedulers.Scheduler;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class SHMtransferProtocol implements TransferProtocol {
     public void executeProducer() {
 
         char[] charBuffer = readFile(Constants.SEND_FILE);
-        Scheduler scheduler = new Scheduler(NAMED_PIPE, charBuffer.length);
+        Scheduler scheduler = new NamedPipeScheduler(NAMED_PIPE, charBuffer.length);
 
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
@@ -46,7 +47,7 @@ public class SHMtransferProtocol implements TransferProtocol {
     @Override
     public void executeConsumer() {
 
-        Scheduler scheduler = new Scheduler(NAMED_PIPE);
+        NamedPipeScheduler scheduler = new NamedPipeScheduler(NAMED_PIPE);
 
         if (scheduler.getCommand() == 0) {
 
