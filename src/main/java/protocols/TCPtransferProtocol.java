@@ -1,9 +1,12 @@
 package protocols;
 
+import dataCreater.DataCreator;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static constants.Constants.*;
 
@@ -12,25 +15,43 @@ public class TCPtransferProtocol implements TransferProtocol {
     @Override
     public void executeProducer() {
 
-        String sendData = Arrays.toString(readFile(SEND_FILE));
-        String readData;
+        List<String> sendData = null;
+        try {
+            sendData = DataCreator.createRandomSizePackage(2 * 1024, LOW_BOUNDER_IN_BYTES, UP_BOUNDER_IN_BYTES);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
-        try (Socket socket = new Socket(TCP_HOST, TCP_CONSUMER_PORT);
-             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-             ServerSocket serverSocket = new ServerSocket(TCP_PRODUCER_PORT)) {
+        try (ServerSocket serverSocket = new ServerSocket(TCP_PRODUCER_PORT);
+             Socket socket = new Socket(TCP_HOST, TCP_CONSUMER_PORT);
+             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream())) {
 
-            long start = System.nanoTime();
-
-            writeTCP(sendData, dataOutputStream);
+            TimeUnit.MILLISECONDS.sleep(10);
 
             Socket client = serverSocket.accept();
 
-            readData = readTCP(client);
+            long start = System.nanoTime();
+            long i = 0;
+            long j = 0;
+            try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream())) {
+
+                while (System.nanoTime() - start < (long) (TRANSFER_TIME_IN_SECONDS * 1e09)) {
+                    for (String onePackage : sendData) {
+                        dataOutputStream.writeUTF(onePackage);
+                        String respData = dataInputStream.readUTF();
+                        j++;
+                        i += respData.length();
+                    }
+                }
+                dataOutputStream.writeUTF("-1");
+            }
 
             long finish = System.nanoTime();
 
+            System.out.println("number of packages: " + j);
+            System.out.println("Total transfer data size in Mb: " + (i / 1024 / 1024));
             System.out.println((finish - start) / 1e6);
-            writeToFile(readData.toCharArray());
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -43,12 +64,17 @@ public class TCPtransferProtocol implements TransferProtocol {
 
         try (ServerSocket serverSocket = new ServerSocket(TCP_CONSUMER_PORT)) {
 
-            Socket client = serverSocket.accept();
-            readData = readTCP(client);
+            while (true) {
+                Socket client = serverSocket.accept();
+                try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream());
+                     Socket socket = new Socket(TCP_HOST, TCP_PRODUCER_PORT);
+                     DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream())) {
 
-            try (Socket socket = new Socket(TCP_HOST, TCP_PRODUCER_PORT);
-                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream())) {
-                writeTCP(readData, dataOutputStream);
+                    do {
+                        readData = dataInputStream.readUTF();
+                        dataOutputStream.writeUTF(readData);
+                    } while (!readData.equals("-1"));
+                }
             }
 
         } catch (Exception e) {
