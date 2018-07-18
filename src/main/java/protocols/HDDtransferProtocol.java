@@ -20,7 +20,7 @@ public class HDDtransferProtocol implements TransferProtocol {
 
         scheduler.sendMessage(0);
 
-        if (scheduler.getCommand() == 1) {
+        if (scheduler.getMessage() == 1) {
             bufferChars = readFile(HDD_PATH);
         } else {
             bufferChars = "no data received".toCharArray();
@@ -37,7 +37,7 @@ public class HDDtransferProtocol implements TransferProtocol {
     public void executeConsumer() {
         NamedPipeScheduler scheduler = new NamedPipeScheduler(NAMED_PIPE);
 
-        if (scheduler.getCommand() == 0) {
+        if (scheduler.getMessage() == 0) {
 
 
             char[] inputChars = readFile(HDD_PATH);

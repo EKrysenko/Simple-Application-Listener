@@ -17,7 +17,7 @@ public class NamedPipeScheduler implements Scheduler {
     }
 
     @Override
-    public int getCommand() {
+    public int getMessage() {
 
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             int message = Integer.parseInt(br.readLine());
