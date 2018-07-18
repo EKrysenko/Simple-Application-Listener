@@ -1,43 +1,33 @@
 package protocols;
 
-import constants.Constants;
-import schedulers.NamedPipeScheduler;
-import schedulers.Scheduler;
+import dataCreater.DataCreator;
 
-import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.CharBuffer;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileChannel.MapMode;
 
-import static constants.Constants.*;
+import static constants.Constants.SHARED_MEMORY_PATH;
 
 public class SHMtransferProtocol implements TransferProtocol {
 
-    @Override
-    public void executeProducer(int lowSizePackage, int highSizePackage, int transferTime) {
+    private final int CLEAR_UTIL = -1;
+    private final int DATA_AREA_START = 64;
+    private final int CONSUMER_OFFSET = 32;
+    private final int PRODUCER_OFFSET = 0;
 
-        char[] charBuffer = readFile(Constants.SEND_FILE);
-        Scheduler scheduler = new NamedPipeScheduler(NAMED_PIPE, charBuffer.length);
+    @Override
+    public void executeProducer() {
+
+        String data = DataCreator.createFixedSizePackage(100);
 
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
 
             long start = System.nanoTime();
 
-            writeToSHM(channel, charBuffer);
-            scheduler.sendMessage(0);
+            StringBuilder sb = new StringBuilder(data);
 
-            if (scheduler.getCommand() == 1) {
-                charBuffer = readFromSHM(channel, scheduler.getSizeCharArray());
-            } else {
-                charBuffer = "no data received".toCharArray();
-            }
 
             long finish = System.nanoTime();
-
-            writeToFile(RECEIVED_FILE, charBuffer);
             System.out.println((finish - start) / 1e6);
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,44 +37,20 @@ public class SHMtransferProtocol implements TransferProtocol {
     @Override
     public void executeConsumer() {
 
-        NamedPipeScheduler scheduler = new NamedPipeScheduler(NAMED_PIPE);
+        try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
+             FileChannel channel = sharedMemory.getChannel()) {
 
-        if (scheduler.getCommand() == 0) {
 
-            try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
-                 FileChannel channel = sharedMemory.getChannel()) {
 
-                char[] inputChars = readFromSHM(channel, scheduler.getSizeCharArray());
+            while (true) {
 
-                // TODO: here we can add some logic to change input data before sending
 
-                writeToSHM(channel, inputChars);
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
-            scheduler.sendMessage(1);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
-
-    private void writeToSHM(FileChannel channel, char[] outputChars) throws Exception {
-
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
-        CharBuffer charBuffer = buffer.asCharBuffer();
-        charBuffer.clear();
-
-        charBuffer.put(outputChars);
-    }
-
-    private char[] readFromSHM(FileChannel channel, int sizeCharArray) throws IOException {
-
-        MappedByteBuffer buffer = channel.map(MapMode.READ_WRITE, 0, SIZE);
-        CharBuffer charBuf = buffer.asCharBuffer();
-        char[] received = new char[sizeCharArray];
-
-        charBuf.get(received);
-        return received;
-    }
 }

@@ -1,7 +1,8 @@
 package schedulers;
 
 public interface Scheduler {
-    int getCommand();
+
+    int getMessage();
 
     void sendMessage(int command);
 
