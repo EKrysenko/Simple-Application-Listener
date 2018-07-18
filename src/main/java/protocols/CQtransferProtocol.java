@@ -1,6 +1,6 @@
 package protocols;
 
-import dataCreater.DataCreater;
+import dataCreater.DataCreator;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
@@ -15,7 +15,7 @@ public class CQtransferProtocol implements TransferProtocol {
 
     {
         try {
-            sendFile = DataCreater.create(50);
+            sendFile = DataCreator.create(400);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
