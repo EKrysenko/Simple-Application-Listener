@@ -8,7 +8,7 @@ import java.util.List;
 public class DataCreator {
 
     private static final String NAME = " Ivanov Ivan Ivanovich ";
-    private static final int ONE_ENTRY_CAPACITY = 200;
+    private static final int ONE_ENTRY_CAPACITY = 500;
 
     public static String create(double capacityInKilobytes) throws UnsupportedEncodingException {
 
@@ -51,6 +51,7 @@ public class DataCreator {
             } else if (allDataLength - startOfPackagePointer > lowBounderInBytes) {
                 out.add(new String(allData, startOfPackagePointer, allDataLength - startOfPackagePointer));
             } else break;
+
             startOfPackagePointer = endOfPackagePointer;
         }
         return out;
