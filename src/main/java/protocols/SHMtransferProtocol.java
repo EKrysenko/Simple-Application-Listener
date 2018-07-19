@@ -4,7 +4,6 @@ import dataCreater.DataCreator;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
@@ -21,12 +20,8 @@ public class SHMtransferProtocol implements TransferProtocol {
 
     @Override
     public void executeProducer() {
-        String data = "";
-        try {
-            data = DataCreator.create(100.);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+
+        String data = DataCreator.createFixedSizePackage(100);
 
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
