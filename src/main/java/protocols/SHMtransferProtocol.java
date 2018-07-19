@@ -1,6 +1,6 @@
 package protocols;
 
-import dataCreater.DataCreater;
+import dataCreater.DataCreator;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -23,7 +23,7 @@ public class SHMtransferProtocol implements TransferProtocol {
     public void executeProducer() {
         String data = "";
         try {
-            data = DataCreater.create(100.);
+            data = DataCreator.create(100.);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
