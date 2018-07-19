@@ -6,20 +6,11 @@ import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 
-import java.io.UnsupportedEncodingException;
-
 import static constants.Constants.SHARED_MEMORY_PATH;
 
 public class CQtransferProtocol implements TransferProtocol {
-    String sendFile;
 
-    {
-        try {
-            sendFile = DataCreator.create(400);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
+    String sendFile = DataCreator.createFixedSizePackage(50);
 
     SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(SHARED_MEMORY_PATH).build();
 
