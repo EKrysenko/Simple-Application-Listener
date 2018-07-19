@@ -1,8 +1,7 @@
-import protocols.TransferProtocol;
-import protocols.CQtransferProtocol;
 import protocols.HDDtransferProtocol;
 import protocols.SHMtransferProtocol;
 import protocols.TCPtransferProtocol;
+import protocols.TransferProtocol;
 
 public class Main {
 
@@ -20,9 +19,6 @@ public class Main {
                 break;
             case "HDD":
                 transferProtocol = new HDDtransferProtocol();
-                break;
-            case "CQ":
-                transferProtocol = new CQtransferProtocol();
                 break;
             default:
                 System.out.println("Wrong input arguments.\n"

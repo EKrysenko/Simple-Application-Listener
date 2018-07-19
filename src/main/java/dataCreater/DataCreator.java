@@ -1,14 +1,17 @@
 package dataCreater;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class DataCreator {
 
     private static final String NAME = " Ivanov Ivan Ivanovich ";
-    private static final int ONE_ENTRY_CAPACITY = 500;
+    private static final int ONE_ENTRY_CAPACITY = 100;
 
     public static String create(double capacityInKilobytes) throws UnsupportedEncodingException {
 
@@ -33,10 +36,14 @@ public class DataCreator {
         return stringBuilder.toString();
     }
 
-    public static List<String> createRandomSizePackage(double capacityInKilobytes, int lowBounderInBytes, int upBounderInBytes)
-            throws UnsupportedEncodingException {
+    public static List<String> createRandomSizePackage(double capacityInKilobytes, int lowBounderInBytes, int upBounderInBytes) {
         List<String> out = new ArrayList<>();
-        byte[] allData = create(capacityInKilobytes).getBytes("UTF-8");
+        byte[] allData = new byte[0];
+        try {
+            allData = create(capacityInKilobytes).getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         int allDataLength = allData.length;
         int startOfPackagePointer = 0;
         int endOfPackagePointer;
@@ -53,6 +60,15 @@ public class DataCreator {
             } else break;
 
             startOfPackagePointer = endOfPackagePointer;
+        }
+        return out;
+    }
+
+    public static List<String> createRandomSizePackage(int arraySize, int lowBounderInBytes, int upBounderInBytes) {
+        List<String> out = new ArrayList<>(arraySize);
+        for (int i = 0; i < arraySize; i++) {
+            String string = RandomStringUtils.random((int) (Math.random() * (upBounderInBytes - lowBounderInBytes) + lowBounderInBytes), "UTF-8");
+            out.add(string);
         }
         return out;
     }

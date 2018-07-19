@@ -4,7 +4,6 @@ import dataCreater.DataCreator;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -17,13 +16,9 @@ public class TCPtransferProtocol implements TransferProtocol {
     @Override
     public void executeProducer() {
 
-        List<String> sendData = null;
-        try {
-            sendData = DataCreator.createRandomSizePackage(200 * 1024, LOW_BOUNDER_IN_BYTES, UP_BOUNDER_IN_BYTES);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
+        List<String> sendData = DataCreator.createRandomSizePackage(10000, LOW_BOUNDER_IN_BYTES, UP_BOUNDER_IN_BYTES);
+//        System.out.println(sendData.get(0).getBytes().length + " " + sendData.get(0).length());
+//        sendData.forEach(i -> System.out.println(i.length()));
         try (ServerSocket serverSocket = new ServerSocket(TCP_PRODUCER_PORT);
              Socket socket = new Socket(TCP_HOST, TCP_CONSUMER_PORT);
              DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream())) {
@@ -41,6 +36,7 @@ public class TCPtransferProtocol implements TransferProtocol {
                 while (true) {
 
                     for (String onePackage : sendData) {
+//                        System.out.println(onePackage.length());
                         dataOutputStream.writeUTF(onePackage);
                         String respData = dataInputStream.readUTF();
                         countOfPackage++;
