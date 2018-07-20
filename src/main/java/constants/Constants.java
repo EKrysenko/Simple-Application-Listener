@@ -40,7 +40,7 @@ public class Constants {
 //        TRANSFER_TIME_IN_SECONDS = Integer.parseInt(properties.getProperty("TRANSFER_TIME_IN_SECONDS"));
 //        UP_BOUNDER_IN_BYTES = Integer.parseInt(properties.getProperty("UP_BOUNDER_IN_BYTES"));
 //        LOW_BOUNDER_IN_BYTES = Integer.parseInt(properties.getProperty("LOW_BOUNDER_IN_BYTES"));
-        ARRAY_SIZE_IN_PACKAGES = Integer.parseInt(properties.getProperty("ARRAY_SIZE_IN_PACKAGES"));
+//        ARRAY_SIZE_IN_PACKAGES = Integer.parseInt(properties.getProperty("ARRAY_SIZE_IN_PACKAGES"));
     }
 
 }

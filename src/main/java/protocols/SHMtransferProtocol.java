@@ -24,7 +24,7 @@ public class SHMtransferProtocol implements TransferProtocol {
     private MappedByteBuffer consumerDataBuffer;
 
     @Override
-    public void executeProducer() {
+    public void executeProducer(int lowSizePackage, int highSizePackage, int transferTime) {
 
         List<String> sendData = DataCreator.createRandomSizePackage(1000, lowSizePackage, highSizePackage);
 
