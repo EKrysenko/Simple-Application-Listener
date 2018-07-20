@@ -74,8 +74,11 @@ public class SHMtransferProtocol implements TransferProtocol {
 
             long finish = System.nanoTime();
 
-            System.out.println("number of packages: " + countOfPackage);
-            System.out.println("Total transfer data size in Mb: " + (countOfBytes / 1024 / 1024));
+            System.out.println("Test for packages from " + lowSizePackage + " to " + highSizePackage + " bytes:");
+            System.out.println("Number of packages\nNumber of Mb\nTime\n");
+
+            System.out.println(countOfPackage);
+            System.out.println(countOfBytes / 1024 / 1024);
             System.out.println((finish - start) / 1e6);
 
         } catch (Exception e) {
