@@ -7,11 +7,12 @@ import java.io.IOException;
 
 public interface TransferProtocol {
 
-
-    default void execute(String executor) {
+    default void execute(String executor, String lowSizePackage, String highSizePackage, String transferTimeInSeconds) {
         switch (executor) {
             case "producer":
-                executeProducer();
+                executeProducer(Integer.parseInt(lowSizePackage),
+                        Integer.parseInt(highSizePackage),
+                        Integer.parseInt(transferTimeInSeconds));
                 break;
             case "consumer":
                 executeConsumer();
@@ -19,7 +20,7 @@ public interface TransferProtocol {
         }
     }
 
-    void executeProducer();
+    void executeProducer(int lowSizePackage, int highSizePackage, int transferTimeInSeconds);
 
     void executeConsumer();
 
