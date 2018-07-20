@@ -48,6 +48,9 @@ public class TCPtransferProtocol implements TransferProtocol {
 
             long finish = System.nanoTime();
 
+            System.out.println("Test for packages from " + lowSizePackage + " to " + highSizePackage + " bytes:");
+            System.out.println("Number of packages\nNumber of Mb\nTime\n");
+
             System.out.println(countOfPackage);
             System.out.println(countOfBytes / 1024 / 1024);
             System.out.println((finish - start) / 1e6);
