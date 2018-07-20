@@ -26,7 +26,7 @@ public class SHMtransferProtocol implements TransferProtocol {
     @Override
     public void executeProducer(int lowSizePackage, int highSizePackage, int transferTime) {
 
-        List<String> sendData = DataCreator.createRandomSizePackage(1000, lowSizePackage, highSizePackage);
+        List<String> sendData = DataCreator.createRandomSizePackage(ARRAY_SIZE_IN_PACKAGES, lowSizePackage, highSizePackage);
 
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
@@ -74,9 +74,7 @@ public class SHMtransferProtocol implements TransferProtocol {
 
             long finish = System.nanoTime();
 
-            System.out.println("Test for packages from " + lowSizePackage + " to " + highSizePackage + " bytes:");
             System.out.println("Number of packages\nNumber of Mb\nTime\n");
-
             System.out.println(countOfPackage);
             System.out.println(countOfBytes / 1024 / 1024);
             System.out.println((finish - start) / 1e6);
