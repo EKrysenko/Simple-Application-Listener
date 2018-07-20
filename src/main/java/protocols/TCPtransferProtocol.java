@@ -13,12 +13,17 @@ import static constants.Constants.*;
 public class TCPtransferProtocol implements TransferProtocol {
 
     @Override
-    public void executeProducer() {
+    public void executeProducer(int lowSizePackage, int highSizePackage, int transferTime) {
 
-        List<String> sendData = DataCreator.createRandomSizePackage(1000, LOW_BOUNDER_IN_BYTES, UP_BOUNDER_IN_BYTES);
+        List<String> sendData = DataCreator.createRandomSizePackage(ARRAY_SIZE_IN_PACKAGES,
+                lowSizePackage,
+                highSizePackage);
+
         try (Socket socket = new Socket(TCP_HOST, TCP_CONSUMER_PORT);
              DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
              DataInputStream dataInputStream = new DataInputStream(socket.getInputStream())) {
+
+            socket.setKeepAlive(true);
 
             long start = System.nanoTime();
             long countOfBytes = 0;
@@ -33,7 +38,7 @@ public class TCPtransferProtocol implements TransferProtocol {
                     countOfPackage++;
                     countOfBytes += respData.length();
 
-                    if (System.nanoTime() - start > (long) (TRANSFER_TIME_IN_SECONDS * 1e09)) {
+                    if (System.nanoTime() - start > (long) (transferTime * 1e09)) {
                         break label;
                     }
                 }
@@ -43,8 +48,8 @@ public class TCPtransferProtocol implements TransferProtocol {
 
             long finish = System.nanoTime();
 
-            System.out.println("number of packages: " + countOfPackage);
-            System.out.println("Total transfer data size in Mb: " + (countOfBytes / 1024 / 1024));
+            System.out.println(countOfPackage);
+            System.out.println(countOfBytes / 1024 / 1024);
             System.out.println((finish - start) / 1e6);
 
         } catch (Exception e) {

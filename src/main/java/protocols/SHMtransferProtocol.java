@@ -16,7 +16,7 @@ import static constants.Constants.*;
 public class SHMtransferProtocol implements TransferProtocol {
 
     @Override
-    public void executeProducer() {
+    public void executeProducer(int lowSizePackage, int highSizePackage, int transferTime) {
 
         char[] charBuffer = readFile(Constants.SEND_FILE);
         Scheduler scheduler = new NamedPipeScheduler(NAMED_PIPE, charBuffer.length);

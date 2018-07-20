@@ -1,4 +1,3 @@
-import protocols.HDDtransferProtocol;
 import protocols.SHMtransferProtocol;
 import protocols.TCPtransferProtocol;
 import protocols.TransferProtocol;
@@ -17,16 +16,18 @@ public class Main {
             case "SHM":
                 transferProtocol = new SHMtransferProtocol();
                 break;
-            case "HDD":
-                transferProtocol = new HDDtransferProtocol();
-                break;
             default:
                 System.out.println("Wrong input arguments.\n"
                         + "Use TCP/HDD/SHM for protocol and producer/consumer for executor");
                 return;
         }
 
-        transferProtocol.execute(args[1]);
+        if (args.length < 5) {
+            System.out.println("Wrong input arguments.\n"
+                    + "Specify also low size, high size for a package in bytes and transfer time in seconds");
+        } else {
+            transferProtocol.execute(args[1], args[2], args[3], args[4]);
+        }
     }
 
 }
