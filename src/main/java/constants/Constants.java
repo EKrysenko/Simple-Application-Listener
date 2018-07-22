@@ -37,10 +37,7 @@ public class Constants {
         TCP_CONSUMER_PORT = Integer.parseInt(properties.getProperty("TCP_CONSUMER_PORT"));
         TCP_PRODUCER_PORT = Integer.parseInt(properties.getProperty("TCP_PRODUCER_PORT"));
         BLOCK_SIZE = Integer.parseInt(properties.getProperty("BLOCK_SIZE"));
-//        TRANSFER_TIME_IN_SECONDS = Integer.parseInt(properties.getProperty("TRANSFER_TIME_IN_SECONDS"));
-//        UP_BOUNDER_IN_BYTES = Integer.parseInt(properties.getProperty("UP_BOUNDER_IN_BYTES"));
-//        LOW_BOUNDER_IN_BYTES = Integer.parseInt(properties.getProperty("LOW_BOUNDER_IN_BYTES"));
-//        ARRAY_SIZE_IN_PACKAGES = Integer.parseInt(properties.getProperty("ARRAY_SIZE_IN_PACKAGES"));
+        ARRAY_SIZE_IN_PACKAGES = Integer.parseInt(properties.getProperty("ARRAY_SIZE_IN_PACKAGES"));
     }
 
 }
