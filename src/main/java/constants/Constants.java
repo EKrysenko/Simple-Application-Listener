@@ -19,12 +19,6 @@ public class Constants {
     public static int BLOCK_SIZE;
     public static int ARRAY_SIZE_IN_PACKAGES;
 
-    public static final int CLEAR_UTIL = -1;
-    public static final int DATA_AREA_START = 64;
-    public static final int CONSUMER_OFFSET = 32;
-    public static final int PRODUCER_OFFSET = 0;
-
-
     static {
         Properties properties = new Properties();
         try {

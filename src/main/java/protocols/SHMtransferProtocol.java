@@ -14,6 +14,11 @@ import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
 
 public class SHMtransferProtocol implements TransferProtocol {
 
+    private static final int CLEAR_UTIL = -1;
+    private static final int DATA_AREA_START = 64;
+    private static final int CONSUMER_OFFSET = 32;
+    private static final int PRODUCER_OFFSET = 0;
+
     private MappedByteBuffer consumerUtil;
     private MappedByteBuffer producerUtil;
     private MappedByteBuffer producerData;
