@@ -59,7 +59,7 @@ public class SHMtransferProtocol implements TransferProtocol {
                         checkConsumerUtil.release();
                     }
 
-                    String readData = readData(channel, dataSize, DATA_AREA_START + data.length());
+                    String readData = readData(channel, dataSize, DATA_AREA_START + data.length(), consumerDataBuffer);
 
                     clearUtilArea(channel, checkConsumerUtil, CONSUMER_OFFSET);
 
@@ -101,7 +101,7 @@ public class SHMtransferProtocol implements TransferProtocol {
                 int message = producerUtilBuffer.asIntBuffer().get();
                 if (message != CLEAR_UTIL) {
 
-                    String inputData = readData(channel, message, DATA_AREA_START);
+                    String inputData = readData(channel, message, DATA_AREA_START, producerDataBuffer);
 
                     clearUtilArea(channel, checkProducerUtil, PRODUCER_OFFSET);
 
@@ -118,10 +118,10 @@ public class SHMtransferProtocol implements TransferProtocol {
 
     }
 
-    private String readData(FileChannel channel, int dataSize, int startIndex) throws IOException {
+    private String readData(FileChannel channel, int dataSize, int startIndex, MappedByteBuffer dataAreaBuffer) throws IOException {
         FileLock dataAreaLock = channel.lock(startIndex, dataSize, true);
         char[] chars = new char[dataSize];
-        channel.map(READ_WRITE, startIndex, SIZE).asCharBuffer().get(chars);
+        dataAreaBuffer.asCharBuffer().get(chars);
         String data = new String(chars);
         dataAreaLock.release();
         return data;
