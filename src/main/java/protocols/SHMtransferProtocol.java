@@ -31,10 +31,7 @@ public class SHMtransferProtocol implements TransferProtocol {
             long countOfBytes = 0;
             long countOfPackage = 0;
 
-            producerUtil = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
-            producerData = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
-            consumerUtil = channel.map(READ_WRITE, CONSUMER_OFFSET, 32);
-            consumerData = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
+            initBuffers(channel);
 
             label:
             while(true) {
@@ -86,10 +83,7 @@ public class SHMtransferProtocol implements TransferProtocol {
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
 
-            producerUtil = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
-            consumerUtil = channel.map(READ_WRITE, CONSUMER_OFFSET, 32);
-            producerData = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
-            consumerData = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
+            initBuffers(channel);
 
             clearUtilArea(channel, PRODUCER_OFFSET, producerUtil);
 
@@ -142,6 +136,13 @@ public class SHMtransferProtocol implements TransferProtocol {
     private void clearUtilArea(FileChannel channel, int startIndex, MappedByteBuffer utilArea) throws IOException {
         FileLock lock = channel.lock(startIndex, 32, true);
         clearUtilArea(lock, utilArea);
+    }
+
+    private void initBuffers(FileChannel channel) throws IOException {
+        this.producerUtil = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
+        this.producerData = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
+        this.consumerUtil = channel.map(READ_WRITE, CONSUMER_OFFSET, 32);
+        this.consumerData = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
     }
 
 }
