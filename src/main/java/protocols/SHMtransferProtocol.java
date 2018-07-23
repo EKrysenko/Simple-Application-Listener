@@ -93,6 +93,7 @@ public class SHMtransferProtocol implements TransferProtocol {
             producerUtilBuffer = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
             producerDataBuffer = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
             consumerDataBuffer = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
+            consumerDataBuffer = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
 
             clearUtilArea(channel, PRODUCER_OFFSET, producerUtilBuffer);
 
