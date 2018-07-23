@@ -14,14 +14,10 @@ import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
 
 public class SHMtransferProtocol implements TransferProtocol {
 
-    private final int CLEAR_UTIL = -1;
-    private final int DATA_AREA_START = 64;
-    private final int CONSUMER_OFFSET = 32;
-    private final int PRODUCER_OFFSET = 0;
-    private MappedByteBuffer consumerUtilBuffer;
-    private MappedByteBuffer producerUtilBuffer;
-    private MappedByteBuffer producerDataBuffer;
-    private MappedByteBuffer consumerDataBuffer;
+    private MappedByteBuffer consumerUtil;
+    private MappedByteBuffer producerUtil;
+    private MappedByteBuffer producerData;
+    private MappedByteBuffer consumerData;
 
     @Override
     public void executeProducer(int lowSizePackage, int highSizePackage, int transferTime) {
@@ -35,33 +31,33 @@ public class SHMtransferProtocol implements TransferProtocol {
             long countOfBytes = 0;
             long countOfPackage = 0;
 
-            producerUtilBuffer = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
-            producerDataBuffer = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
-            consumerUtilBuffer = channel.map(READ_WRITE, CONSUMER_OFFSET, 32);
-            consumerDataBuffer = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
+            producerUtil = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
+            producerData = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
+            consumerUtil = channel.map(READ_WRITE, CONSUMER_OFFSET, 32);
+            consumerData = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
 
             label:
             while(true) {
 
                 for (String data : sendData) {
 
-                    clearUtilArea(channel, CONSUMER_OFFSET, consumerUtilBuffer);
+                    clearUtilArea(channel, CONSUMER_OFFSET, consumerUtil);
 
-                    writeData(data, channel, PRODUCER_OFFSET, DATA_AREA_START, producerUtilBuffer, producerDataBuffer);
+                    writeData(data, channel, PRODUCER_OFFSET, DATA_AREA_START, producerUtil, producerData);
 
                     int dataSize;
                     FileLock checkConsumerUtil;
                     while (true) {
                         checkConsumerUtil = channel.lock(CONSUMER_OFFSET, 32, true);
-                        if ((dataSize = consumerUtilBuffer.asIntBuffer().get()) != CLEAR_UTIL) {
+                        if ((dataSize = consumerUtil.asIntBuffer().get()) != CLEAR_UTIL) {
                             break;
                         }
                         checkConsumerUtil.release();
                     }
 
-                    String readData = readData(channel, dataSize, DATA_AREA_START + data.length(), consumerDataBuffer);
+                    String readData = readData(channel, dataSize, DATA_AREA_START + data.length(), consumerData);
 
-                    clearUtilArea(checkConsumerUtil, consumerUtilBuffer);
+                    clearUtilArea(checkConsumerUtil, consumerUtil);
 
                     countOfPackage++;
                     countOfBytes += readData.length();
@@ -90,25 +86,25 @@ public class SHMtransferProtocol implements TransferProtocol {
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
 
-            producerUtilBuffer = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
-            consumerUtilBuffer = channel.map(READ_WRITE, CONSUMER_OFFSET, 32);
-            producerDataBuffer = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
-            consumerDataBuffer = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
+            producerUtil = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
+            consumerUtil = channel.map(READ_WRITE, CONSUMER_OFFSET, 32);
+            producerData = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
+            consumerData = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
 
-            clearUtilArea(channel, PRODUCER_OFFSET, producerUtilBuffer);
+            clearUtilArea(channel, PRODUCER_OFFSET, producerUtil);
 
             while (true) {
                 FileLock checkProducerUtil = channel.lock(PRODUCER_OFFSET, 32, true);
-                int message = producerUtilBuffer.asIntBuffer().get();
+                int message = producerUtil.asIntBuffer().get();
                 if (message != CLEAR_UTIL) {
 
-                    String inputData = readData(channel, message, DATA_AREA_START, producerDataBuffer);
+                    String inputData = readData(channel, message, DATA_AREA_START, producerData);
 
-                    clearUtilArea(checkProducerUtil, producerUtilBuffer);
+                    clearUtilArea(checkProducerUtil, producerUtil);
 
                     String outputData = inputData;
 
-                    writeData(outputData, channel, CONSUMER_OFFSET, DATA_AREA_START + inputData.length(), consumerUtilBuffer, consumerDataBuffer);
+                    writeData(outputData, channel, CONSUMER_OFFSET, DATA_AREA_START + inputData.length(), consumerUtil, consumerData);
                 }
                 checkProducerUtil.release();
             }
@@ -119,33 +115,33 @@ public class SHMtransferProtocol implements TransferProtocol {
 
     }
 
-    private String readData(FileChannel channel, int dataSize, int startIndex, MappedByteBuffer dataAreaBuffer) throws IOException {
+    private String readData(FileChannel channel, int dataSize, int startIndex, MappedByteBuffer dataArea) throws IOException {
         FileLock dataAreaLock = channel.lock(startIndex, dataSize, true);
         char[] chars = new char[dataSize];
-        dataAreaBuffer.asCharBuffer().get(chars);
+        dataArea.asCharBuffer().get(chars);
         String data = new String(chars);
         dataAreaLock.release();
         return data;
     }
 
-    private void writeData(String data, FileChannel channel, int utilAreaStart, int dataAreaStart, MappedByteBuffer utilAreaBuffer, MappedByteBuffer dataAreaBuffer) throws IOException {
+    private void writeData(String data, FileChannel channel, int utilAreaStart, int dataAreaStart, MappedByteBuffer utilArea, MappedByteBuffer dataArea) throws IOException {
         FileLock utilAreaLock = channel.lock(utilAreaStart, 32, true);
-        utilAreaBuffer.asIntBuffer().put(data.length());
+        utilArea.asIntBuffer().put(data.length());
 
         FileLock dataAreaLock = channel.lock(dataAreaStart, data.length(), true);
-        dataAreaBuffer.asCharBuffer().put(data);
+        dataArea.asCharBuffer().put(data);
         dataAreaLock.release();
         utilAreaLock.release();
     }
 
-    private void clearUtilArea(FileLock lock, MappedByteBuffer utilAreaBuffer) throws IOException {
-        utilAreaBuffer.asIntBuffer().put(CLEAR_UTIL);
+    private void clearUtilArea(FileLock lock, MappedByteBuffer utilArea) throws IOException {
+        utilArea.asIntBuffer().put(CLEAR_UTIL);
         lock.release();
     }
 
-    private void clearUtilArea(FileChannel channel, int startIndex, MappedByteBuffer utilAreaBuffer) throws IOException {
+    private void clearUtilArea(FileChannel channel, int startIndex, MappedByteBuffer utilArea) throws IOException {
         FileLock lock = channel.lock(startIndex, 32, true);
-        clearUtilArea(lock, utilAreaBuffer);
+        clearUtilArea(lock, utilArea);
     }
 
 }
