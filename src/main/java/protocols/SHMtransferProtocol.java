@@ -45,9 +45,9 @@ public class SHMtransferProtocol implements TransferProtocol {
 
                 for (String data : sendData) {
 
-                    clearUtilArea(channel, CONSUMER_OFFSET);
+                    clearUtilArea(channel, CONSUMER_OFFSET, consumerUtilBuffer);
 
-                    writeData(data, channel, PRODUCER_OFFSET, DATA_AREA_START, consumerUtilBuffer, producerDataBuffer);
+                    writeData(data, channel, PRODUCER_OFFSET, DATA_AREA_START, producerUtilBuffer, producerDataBuffer);
 
                     int dataSize;
                     FileLock checkConsumerUtil;
@@ -61,7 +61,7 @@ public class SHMtransferProtocol implements TransferProtocol {
 
                     String readData = readData(channel, dataSize, DATA_AREA_START + data.length(), consumerDataBuffer);
 
-                    clearUtilArea(channel, checkConsumerUtil, CONSUMER_OFFSET);
+                    clearUtilArea(checkConsumerUtil, consumerUtilBuffer);
 
                     countOfPackage++;
                     countOfBytes += readData.length();
@@ -94,7 +94,7 @@ public class SHMtransferProtocol implements TransferProtocol {
             producerDataBuffer = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
             consumerDataBuffer = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
 
-            clearUtilArea(channel, PRODUCER_OFFSET);
+            clearUtilArea(channel, PRODUCER_OFFSET, producerUtilBuffer);
 
             while (true) {
                 FileLock checkProducerUtil = channel.lock(PRODUCER_OFFSET, 32, true);
@@ -103,7 +103,7 @@ public class SHMtransferProtocol implements TransferProtocol {
 
                     String inputData = readData(channel, message, DATA_AREA_START, producerDataBuffer);
 
-                    clearUtilArea(channel, checkProducerUtil, PRODUCER_OFFSET);
+                    clearUtilArea(checkProducerUtil, producerUtilBuffer);
 
                     String outputData = inputData;
 
@@ -137,14 +137,14 @@ public class SHMtransferProtocol implements TransferProtocol {
         utilAreaLock.release();
     }
 
-    private void clearUtilArea(FileChannel channel, FileLock lock, int producer_offset) throws IOException {
-        channel.map(READ_WRITE, producer_offset, SIZE).asIntBuffer().put(CLEAR_UTIL);
+    private void clearUtilArea(FileLock lock, MappedByteBuffer utilAreaBuffer) throws IOException {
+        utilAreaBuffer.asIntBuffer().put(CLEAR_UTIL);
         lock.release();
     }
 
-    private void clearUtilArea(FileChannel channel, int startIndex) throws IOException {
+    private void clearUtilArea(FileChannel channel, int startIndex, MappedByteBuffer utilAreaBuffer) throws IOException {
         FileLock lock = channel.lock(startIndex, 32, true);
-        clearUtilArea(channel, lock, startIndex);
+        clearUtilArea(lock, utilAreaBuffer);
     }
 
 }
