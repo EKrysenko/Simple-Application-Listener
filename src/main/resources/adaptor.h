@@ -10,9 +10,9 @@ extern "C" {
 /*
  * Class:     CallingCOBOL
  * Method:    adaptor
- * Signature: (Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT void JNICALL Java_CallingCOBOL_adaptor
+JNIEXPORT jstring JNICALL Java_CallingCOBOL_adaptor
   (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus

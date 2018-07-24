@@ -1,12 +1,16 @@
+import java.io.File;
+
 public class CallingCOBOL {
 
     static {
-        System.load("/home/egor/IdeaProjects/lgi-hrwd/libadaptor.so");
+        File cobolLibrary = new File("./src/main/resources/libadaptor.so");
+        System.load(cobolLibrary.getAbsolutePath());
     }
 
-    private native void adaptor(String from_java);
+    private native String adaptor(String from_java);
 
     public static void main(String[] args) {
-        new CallingCOBOL().adaptor("Hello world!");
+
+        System.out.println(new CallingCOBOL().adaptor("Hello world!"));
     }
 }
