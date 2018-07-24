@@ -1,27 +1,36 @@
-package protocols;
+package producers;
 
 import dataCreater.DataCreator;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 
 import static constants.Constants.*;
 
-public class TCPtransferProtocol implements TransferProtocol {
+public class TCPProducer implements Producer {
+
+    private int lowSizePackage;
+    private int highSizePackage;
+    private int transferTime;
+
+    public TCPProducer(int lowSizePackage, int highSizePackage, int transferTime) {
+        this.lowSizePackage = lowSizePackage;
+        this.highSizePackage = highSizePackage;
+        this.transferTime = transferTime;
+    }
 
     @Override
-    public void executeProducer(int lowSizePackage, int highSizePackage, int transferTime) {
-
-        List<String> sendData = DataCreator.createRandomSizePackage(ARRAY_SIZE_IN_PACKAGES,
-                lowSizePackage,
-                highSizePackage);
+    public void run() {
 
         try (Socket socket = new Socket(TCP_HOST, TCP_CONSUMER_PORT);
              DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
              DataInputStream dataInputStream = new DataInputStream(socket.getInputStream())) {
+
+            List<String> sendData = DataCreator.createRandomSizePackage(ARRAY_SIZE_IN_PACKAGES,
+                    lowSizePackage,
+                    highSizePackage);
 
             socket.setKeepAlive(true);
 
@@ -57,26 +66,4 @@ public class TCPtransferProtocol implements TransferProtocol {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void executeConsumer() {
-        String readData;
-
-        try (ServerSocket serverSocket = new ServerSocket(TCP_CONSUMER_PORT)) {
-            while (true) {
-                Socket client = serverSocket.accept();
-                try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream());
-                     DataOutputStream dataOutputStream = new DataOutputStream(client.getOutputStream())) {
-
-                    do {
-                        readData = dataInputStream.readUTF();
-                        dataOutputStream.writeUTF(readData);
-                    } while (!readData.equals("-1"));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }
