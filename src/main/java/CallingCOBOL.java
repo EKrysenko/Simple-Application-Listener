@@ -10,7 +10,7 @@ public class CallingCOBOL {
     private native String adaptor(String from_java);
 
     public static void main(String[] args) {
-
-        System.out.println(new CallingCOBOL().adaptor("Hello world!"));
+        String str = new CallingCOBOL().adaptor("Hello world!");
+        System.out.println("java: " + str);
     }
 }
