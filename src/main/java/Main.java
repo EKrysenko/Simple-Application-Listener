@@ -1,8 +1,8 @@
 import factories.SHMFactory;
-import factories.TransferProtocolFactory;
 import factories.TCPFactory;
+import factories.TransferProtocolFactory;
 
-import static java.lang.Integer.*;
+import static java.lang.Integer.parseInt;
 
 public class Main {
 
@@ -12,40 +12,39 @@ public class Main {
             System.out.println("Wrong input arguments.\n"
                     + "Specify also low size, high size for a package in bytes "
                     + "and transfer time in seconds");
+            return;
         }
 
-        TransferProtocolFactory factory;
+        TransferProtocolFactory factory = getFactory(args[0]);
 
-        switch (args[0]) {
-            case "TCP":
-                factory = new TCPFactory();
-                break;
-
-            case "SHM":
-                factory = new SHMFactory();
-                break;
-            default:
-                System.out.println("Wrong input arguments.\n"
-                        + "Use TCP/HDD/SHM for protocol and producer/consumer for executor");
-                return;
+        if ("producer".equals(args[1])) {
+            factory.createProducer(
+                    parseInt(args[2]),
+                    parseInt(args[3]),
+                    parseInt(args[4]))
+                    .run();
         }
-
-        switch (args[1]) {
-            case "consumer":
-                factory.createConsumer().run();
-                return;
-            case "producer":
-                factory.createProducer(
-                        parseInt(args[2]),
-                        parseInt(args[3]),
-                        parseInt(args[4]))
-                        .run();
-                return;
-            default:
-                System.out.println("Wrong input arguments.\n"
-                        + "Use TCP/HDD/SHM for protocol and producer/consumer for executor");
+        if ("consumer".equals(args[1])) {
+            factory.createConsumer().run();
         }
+        System.out.println("Wrong input arguments.\n"
+                + "Use producer/consumer for executor. \n" +
+                "by default consumer is created");
 
+    }
+
+    private static TransferProtocolFactory getFactory(String protocol) {
+        if ("SHM".equals(protocol)) {
+            return new SHMFactory();
+        }
+        if ("TCP".equals(protocol)) {
+            return new TCPFactory();
+        } else {
+            System.out.println("Wrong input arguments.\n"
+                    + "Use TCP/SHM.\n"
+                    + "By default TCP is started");
+            return new TCPFactory();
+        }
     }
 
 }
