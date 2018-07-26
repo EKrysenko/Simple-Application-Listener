@@ -12,7 +12,7 @@
        linkage section.
 
            01 string-from-java pic x(20).
-           01 cobol-string pic x(20).
+           01 cobol-string pic x(22).
 
        procedure division.
 
@@ -25,12 +25,13 @@
 
 
            set pchar to address of string-from-java.
-           set address of temp-string to pchar.
 
+           set address of temp-string to pchar.
+           string temp-string delimited by x"00" into my-string.
 
            display "my-string set".
-           display string-from-java.
+           display my-string.
 
            move "hello COBOL" to cobol-string.
-
+           string cobol-string delimited by x"00" into cobol-string.
            goback.
