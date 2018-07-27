@@ -5,7 +5,6 @@ different protocols:
 
 * TCP  
 * IPC (shared memory)  
-* HDD (host disk drive)  
 
 **The instruction is applied for linux-based system only.**
 
@@ -16,77 +15,47 @@ Prepare your environment:
 * make sure that Docker is installed on your computer:  
     `docker -v`
 
-* create named pipe somewhere on your computer to use SHM and HDD protocols:  
-    `mkfifo <pipename>`
-        
-* create empty buffer text file in any folder ("results" folder) to use HDD protocol:  
-    `touch <buffername>`
-        
-* create empty text file in the "results" folder for producer to write received data into:  
-    `touch <receivedname>`
-        
-* unzip send.zip archive file from 'benchmarks' folder to the "results" folder:  
-    `unzip send.zip`
-        
-* place start.sh file in the "results" folder
-
-* fill property file "./config.properties" with your paths to pipename, buffername, receivedname and send.txt files
-
-* replace "shm", "pipe", "results" and "steps" variables values with your own in start.sh script
+* create named pipe 'sharedMemory' somewhere on your computer to use SHM and HDD protocols:  
+    `mkfifo sharedMemory`
+                
+* fill property file "./config.properties" with your paths to named pipe name
 
 Build Docker image:
 
-* create listener-0.1.jar artifact file
+* create listener-0.1-jar-with-dependencies.jar artifact file
 
-* put Dockerfile, listener-0.1.jar and config.properties in the one folder
+* put Dockerfile, listener-0.1-jar-with-dependencies.jar and config.properties in the same folder
 
 * build Docker image: run the following command from that folder  
     `docker build --tag listener .`
 
 Run tests:
 
-* change directory to "results" folder:  
-    `cd ~/results`
+* run start_testing.sh script:  
+    `./start_testing.sh`
 
-* run start.sh script:  
-    `./start.sh`
+**Number of seconds, package sizes and number of steps is set in .sh scripts**
 
 Some useful docker commands:
 
-* Run Docker container with SHM consumer:  
-    `docker run --name ipc_consumer --ipc host 
+* Run Docker container with SHM consumer:    
+    `docker run --name SHM_consumer --ipc host 
     -v <path_to_/dev/shm/>:<path_to_/dev/shm/> 
-    -v <path_to_pipe_file>:<path_to_pipe_file> 
-    listener SHM consumer`  
+    listener SHM consumer <smallest package size> <biggest package size> <seconds to run test>`
    
 * Run Docker container with SHM producer:  
-    `docker run --name ipc_producer --ipc host 
+    `docker run --name SHM_producer --ipc host 
     -v <path_to_/dev/shm/>:<path_to_/dev/shm/> 
-    -v <path_to_pipe_file>:<path_to_pipe_file> 
-    -v <path_to_results_folder>:<path_to_results_folder>
-    listener SHM producer`  
+    listener SHM producer <smallest package size> <biggest package size> <seconds to run test>`
     
 * Run Docker container with TCP consumer:  
-    `docker run --name tcp_consumer --net host 
-    -v <path_to_results_folder>:<path_to_results_folder>
-    listener TCP consumer`  
+    `docker run --name TCP_consumer --net host 
+    listener TCP consumer <smallest package size> <biggest package size> <seconds to run test>` 
 
 * Run Docker container with TCP producer:  
-    `docker run --name tcp_producer --net host 
-    -v <path_to_results_folder>:<path_to_results_folder>
-    listener TCP producer`  
+    `docker run --name TCP_producer --net host 
+    listener TCP producer <smallest package size> <biggest package size> <seconds to run test>`
 
-* Run Docker container with HDD consumer:  
-    `docker run --name hdd_consumer 
-    -v <path_to_pipe_file>:<path_to_pipe_file> 
-    -v <path_to_results_folder>:<path_to_results_folder>
-    listener HDD consumer`  
-
-* Run Docker container with HDD producer:  
-    `docker run --name hdd_producer 
-    -v <path_to_pipe_file>:<path_to_pipe_file> 
-    -v <path_to_results_folder>:<path_to_results_folder>
-    listener HDD producer`  
 
 **Both producer and consumer of the same transfer protocol 
 are needed for successful measuring.**
