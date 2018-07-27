@@ -1,4 +1,4 @@
-package producers;
+package client;
 
 import dataCreater.DataCreator;
 
@@ -9,16 +9,21 @@ import java.util.List;
 
 import static constants.Constants.*;
 
-public class TCPProducer implements Producer {
+public class TCPClient implements Client {
 
     private int lowSizePackage;
     private int highSizePackage;
     private int transferTime;
 
-    public TCPProducer(int lowSizePackage, int highSizePackage, int transferTime) {
+    private TCPClient(int lowSizePackage, int highSizePackage, int transferTime) {
         this.lowSizePackage = lowSizePackage;
         this.highSizePackage = highSizePackage;
         this.transferTime = transferTime;
+    }
+
+
+    public static Client getTCPClient(int lowSizePackage, int highSizePackage, int transferTime) {
+        return new TCPClient(lowSizePackage, highSizePackage, transferTime);
     }
 
     @Override

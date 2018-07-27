@@ -1,4 +1,4 @@
-package consumers;
+package server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,7 +7,7 @@ import java.net.Socket;
 
 import static constants.Constants.TCP_CONSUMER_PORT;
 
-public class TCPConsumer implements Consumer {
+public class TCPServer implements Server {
     @Override
     public void run() {
         String readData;
