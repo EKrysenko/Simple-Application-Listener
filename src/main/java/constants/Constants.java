@@ -14,8 +14,8 @@ public class Constants {
     public static String SEND_FILE;
     public static String NAMED_PIPE;
     public static String TCP_HOST;
-    public static int TCP_CONSUMER_PORT;
-    public static int TCP_PRODUCER_PORT;
+    public static int TCP_SERVER_PORT;
+    public static int TCP_CLIENT_PORT;
     public static int BLOCK_SIZE;
     public static int ARRAY_SIZE_IN_PACKAGES;
 
@@ -33,8 +33,8 @@ public class Constants {
         SEND_FILE = properties.getProperty("SEND_FILE");
         NAMED_PIPE = properties.getProperty("NAMED_PIPE");
         TCP_HOST = properties.getProperty("TCP_HOST");
-        TCP_CONSUMER_PORT = Integer.parseInt(properties.getProperty("TCP_CONSUMER_PORT"));
-        TCP_PRODUCER_PORT = Integer.parseInt(properties.getProperty("TCP_PRODUCER_PORT"));
+        TCP_SERVER_PORT = Integer.parseInt(properties.getProperty("TCP_CONSUMER_PORT"));
+        TCP_CLIENT_PORT = Integer.parseInt(properties.getProperty("TCP_PRODUCER_PORT"));
         BLOCK_SIZE = Integer.parseInt(properties.getProperty("BLOCK_SIZE"));
         ARRAY_SIZE_IN_PACKAGES = Integer.parseInt(properties.getProperty("ARRAY_SIZE_IN_PACKAGES"));
     }
