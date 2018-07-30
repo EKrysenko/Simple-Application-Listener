@@ -12,23 +12,26 @@
        linkage section.
 
            01 string-from-java pic x(20).
+           01 cobol-string pic x(22).
 
        procedure division.
 
            sub-cob section.
            goback.
 
-           entry "proc-cob" using by reference string-from-java.
-           display "entry proc-cob".
+           entry "proc-cob" using
+           by reference string-from-java
+           by REFERENCE cobol-string.
+
 
            set pchar to address of string-from-java.
-           display "pchar set".
 
            set address of temp-string to pchar.
-           display "temp-string set"
-
            string temp-string delimited by x"00" into my-string.
+
            display "my-string set".
            display my-string.
-           MOVE 2 TO RETURN-CODE.
+
+           move "hello COBOL" to cobol-string.
+           string cobol-string delimited by x"00" into cobol-string.
            goback.
