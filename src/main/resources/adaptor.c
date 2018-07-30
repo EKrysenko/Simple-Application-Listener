@@ -14,7 +14,7 @@ JNIEXPORT jstring JNICALL Java_CallingCOBOL_adaptor(JNIEnv * env, jobject obj, j
 
     void (*proc_cob)(char*, char*) = (void(*)(char*))dlsym(sub_cob, "proc__cob");
     if (proc_cob) {
-        printf("proc addr is %p\n", proc_cob);
+//        printf("proc addr is %p\n", proc_cob);
     } else {
         puts("proc addr is null");
     }
@@ -24,7 +24,6 @@ JNIEXPORT jstring JNICALL Java_CallingCOBOL_adaptor(JNIEnv * env, jobject obj, j
 
     proc_cob(temp, result);
 
-    puts("cobol proc run ok");
     dlclose(sub_cob);
 
     return (*env)->NewStringUTF(env, result);
