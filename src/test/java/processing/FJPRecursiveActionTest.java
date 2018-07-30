@@ -1,5 +1,6 @@
-package Actions;
+package processing;
 
+import parallelization.FJPRecursiveAction;
 import org.junit.Assert;
 import org.junit.Before;
 

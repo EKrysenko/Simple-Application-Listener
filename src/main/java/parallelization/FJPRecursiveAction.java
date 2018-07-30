@@ -1,11 +1,11 @@
-package Actions;
+package parallelization;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-import static Actions.MockCobolProcedure.executeCobolProcedure;
+import static processing.MockCobolWrapperProcedure.executeCobolProcedure;
 
 public class FJPRecursiveAction extends RecursiveAction {
 
@@ -22,7 +22,7 @@ public class FJPRecursiveAction extends RecursiveAction {
     }
 
     @Override
-    protected void compute() {
+    public void compute() {
 
         if (to - from < THRESHOLD) {
             processing(data, from, to);
@@ -45,7 +45,7 @@ public class FJPRecursiveAction extends RecursiveAction {
     }
 
     private void processing(String[] data, int from, int to) {
-        executeCobolProcedure(data, from, to, 500);
+        executeCobolProcedure(data, from, to);
     }
 
 }
