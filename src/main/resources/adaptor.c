@@ -3,7 +3,7 @@
 #include "libcob.h"
 #include "adaptor.h"
 #include "stdio.h"
-JNIEXPORT jstring JNICALL Java_CallingCOBOL_adaptor(JNIEnv * env, jobject obj, jstring string_from_java) {
+JNIEXPORT jstring JNICALL Java_processing_CallingCobol_adaptor(JNIEnv * env, jobject obj, jstring string_from_java) {
     cob_init(0, NULL);
     void * sub_cob;
     sub_cob = dlopen("./src/main/resources/libsub-cob.so", RTLD_NOW);

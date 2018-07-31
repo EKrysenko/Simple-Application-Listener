@@ -1,3 +1,4 @@
+import processing.CallingCobol;
 import servers.IPCServer;
 import servers.Server;
 import servers.TCPServer;
@@ -5,7 +6,7 @@ import servers.TCPServer;
 public class Main {
 
     public static void main(String[] args) {
-
+        System.out.println(new CallingCobol().adaptor("sdgfsdfsd"));
         if (args.length < 4) {
             System.out.println("Wrong input arguments.\n"
                     + "Specify also low size, high size for a package in bytes "
