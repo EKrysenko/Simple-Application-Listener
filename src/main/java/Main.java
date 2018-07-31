@@ -1,6 +1,6 @@
-import servers.IPCServer;
+import servers.EchoIPCServer;
+import servers.EchoTCPServer;
 import servers.Server;
-import servers.TCPServer;
 
 public class Main {
 
@@ -16,17 +16,17 @@ public class Main {
         Server server;
 
         if ("IPC".equals(args[0])) {
-            server = IPCServer.getIPCServer();
+            server = EchoIPCServer.createIPCServer();
         } else if ("TCP".equals(args[0])) {
-            server = TCPServer.getTCPServer();
+            server = EchoTCPServer.createTCPServer();
         } else {
             System.out.println("Wrong input arguments.\n"
                     + "Use TCP/IPC.\n"
                     + "By default TCP is started");
-            server = TCPServer.getTCPServer();
+            server = EchoTCPServer.createTCPServer();
         }
 
-        server.run();
+        server.process();
     }
 
 

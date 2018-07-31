@@ -10,7 +10,7 @@ import static constants.Constants.SHARED_MEMORY_PATH;
 import static constants.Constants.SIZE;
 import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
 
-public class IPCServer implements Server {
+public class EchoIPCServer implements Server {
 
     private static final int CLEAR_UTIL = -1;
     private static final int DATA_AREA_START = 64;
@@ -22,15 +22,15 @@ public class IPCServer implements Server {
     private MappedByteBuffer producerData;
     private MappedByteBuffer consumerData;
 
-    private IPCServer() {
+    private EchoIPCServer() {
     }
 
-    public static Server getIPCServer() {
-        return new IPCServer();
+    public static Server createIPCServer() {
+        return new EchoIPCServer();
     }
 
     @Override
-    public void run() {
+    public void process() {
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
 
@@ -60,7 +60,7 @@ public class IPCServer implements Server {
     }
 
     private String readData(FileChannel channel, int dataSize, MappedByteBuffer dataArea) throws IOException {
-        FileLock dataAreaLock = channel.lock(IPCServer.DATA_AREA_START, dataSize, true);
+        FileLock dataAreaLock = channel.lock(EchoIPCServer.DATA_AREA_START, dataSize, true);
         char[] chars = new char[dataSize];
         dataArea.asCharBuffer().get(chars);
         String data = new String(chars);
@@ -69,7 +69,7 @@ public class IPCServer implements Server {
     }
 
     private void writeData(String data, FileChannel channel, int dataAreaStart, MappedByteBuffer utilArea, MappedByteBuffer dataArea) throws IOException {
-        FileLock utilAreaLock = channel.lock(IPCServer.CONSUMER_OFFSET, 32, true);
+        FileLock utilAreaLock = channel.lock(EchoIPCServer.CONSUMER_OFFSET, 32, true);
         utilArea.asIntBuffer().put(data.length());
 
         FileLock dataAreaLock = channel.lock(dataAreaStart, data.length(), true);
@@ -84,7 +84,7 @@ public class IPCServer implements Server {
     }
 
     private void clearUtilArea(FileChannel channel, MappedByteBuffer utilArea) throws IOException {
-        FileLock lock = channel.lock(IPCServer.PRODUCER_OFFSET, 32, true);
+        FileLock lock = channel.lock(EchoIPCServer.PRODUCER_OFFSET, 32, true);
         clearUtilArea(lock, utilArea);
     }
 

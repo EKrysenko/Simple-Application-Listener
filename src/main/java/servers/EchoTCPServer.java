@@ -7,17 +7,17 @@ import java.net.Socket;
 
 import static constants.Constants.TCP_CONSUMER_PORT;
 
-public class TCPServer implements Server {
+public class EchoTCPServer implements Server {
 
-    private TCPServer() {
+    private EchoTCPServer() {
     }
 
-    public static Server getTCPServer() {
-        return new TCPServer();
+    public static Server createTCPServer() {
+        return new EchoTCPServer();
     }
 
     @Override
-    public void run() {
+    public void process() {
         String readData;
 
         try (ServerSocket serverSocket = new ServerSocket(TCP_CONSUMER_PORT)) {

@@ -2,6 +2,6 @@ package servers;
 
 public interface Server {
 
-    void run();
+    void process();
 
 }
