@@ -33,12 +33,12 @@ public class IPCClient implements Client {
         this.transferTime = transferTime;
     }
 
-    public static Client getIPCClient(int lowSizePackage, int highSizePackage, int transferTime) {
+    public static Client createIPCClient(int lowSizePackage, int highSizePackage, int transferTime) {
         return new IPCClient(lowSizePackage, highSizePackage, transferTime);
     }
 
     @Override
-    public void run() {
+    public void perform() {
         List<String> sendData = DataCreator.createRandomSizePackage(ARRAY_SIZE_IN_PACKAGES, lowSizePackage, highSizePackage);
 
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");

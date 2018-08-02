@@ -21,12 +21,12 @@ public class TCPClient implements Client {
         this.transferTime = transferTime;
     }
 
-    public static Client getTCPClient(int lowSizePackage, int highSizePackage, int transferTime) {
+    public static Client createTCPClient(int lowSizePackage, int highSizePackage, int transferTime) {
         return new TCPClient(lowSizePackage, highSizePackage, transferTime);
     }
 
     @Override
-    public void run() {
+    public void perform() {
 
         try (Socket socket = new Socket(TCP_HOST, TCP_SERVER_PORT);
              DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
