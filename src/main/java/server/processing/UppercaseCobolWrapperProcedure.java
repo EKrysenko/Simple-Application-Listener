@@ -1,11 +1,12 @@
 package server.processing;
 
-public class MockCobolWrapperProcedure {
+public class UppercaseCobolWrapperProcedure {
 
     public static void executeCobolProcedure(String[] data, int from, int to) {
+        CallingCobol procedure = new CallingCobol();
 
         for (int i = from; i < to; i++) {
-            data[i] = data[i].toUpperCase();
+            data[i] = procedure.adaptor(data[i]);
         }
     }
 }

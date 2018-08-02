@@ -36,22 +36,29 @@ public class EchoIPCServer implements Server {
 
             initBuffers(channel);
 
-            clearUtilArea(channel, producerUtil);
+            FileLock lock = channel.lock(EchoIPCServer.PRODUCER_OFFSET, 32, true);
+            producerUtil.asIntBuffer().put(CLEAR_UTIL);
+            lock.release();
 
             while (true) {
                 FileLock checkProducerUtil = channel.lock(PRODUCER_OFFSET, 32, true);
-                int message = producerUtil.asIntBuffer().get();
-                if (message != CLEAR_UTIL) {
+                try {
+                    int message = producerUtil.asIntBuffer().get();
 
-                    String inputData = readData(channel, message, producerData);
+                    if (message != CLEAR_UTIL) {
 
-                    clearUtilArea(checkProducerUtil, producerUtil);
+                        String inputData = readData(channel, message, producerData);
 
-                    String outputData = inputData;
+                        producerUtil.asIntBuffer().put(CLEAR_UTIL);
+                        checkProducerUtil.release();
 
-                    writeData(outputData, channel, DATA_AREA_START + inputData.length(), consumerUtil, consumerData);
+                        String outputData = inputData;
+
+                        writeData(outputData, channel, DATA_AREA_START + inputData.length(), consumerUtil, consumerData);
+                    }
+                } finally {
+                    checkProducerUtil.release();
                 }
-                checkProducerUtil.release();
             }
 
         } catch (Exception e) {
@@ -68,30 +75,28 @@ public class EchoIPCServer implements Server {
 
     private String readData(FileChannel channel, int dataSize, MappedByteBuffer dataArea) throws IOException {
         FileLock dataAreaLock = channel.lock(EchoIPCServer.DATA_AREA_START, dataSize, true);
-        char[] chars = new char[dataSize];
-        dataArea.asCharBuffer().get(chars);
-        String data = new String(chars);
-        dataAreaLock.release();
+        String data;
+        try {
+            char[] chars = new char[dataSize];
+            dataArea.asCharBuffer().get(chars);
+            data = new String(chars);
+        } finally {
+            dataAreaLock.release();
+        }
+
         return data;
     }
 
     private void writeData(String data, FileChannel channel, int dataAreaStart, MappedByteBuffer utilArea, MappedByteBuffer dataArea) throws IOException {
         FileLock utilAreaLock = channel.lock(EchoIPCServer.CONSUMER_OFFSET, 32, true);
-        utilArea.asIntBuffer().put(data.length());
-
         FileLock dataAreaLock = channel.lock(dataAreaStart, data.length(), true);
-        dataArea.asCharBuffer().put(data);
-        dataAreaLock.release();
-        utilAreaLock.release();
+        try {
+            utilArea.asIntBuffer().put(data.length());
+            dataArea.asCharBuffer().put(data);
+        } finally {
+            dataAreaLock.release();
+            utilAreaLock.release();
+        }
     }
 
-    private void clearUtilArea(FileLock lock, MappedByteBuffer utilArea) throws IOException {
-        utilArea.asIntBuffer().put(CLEAR_UTIL);
-        lock.release();
-    }
-
-    private void clearUtilArea(FileChannel channel, MappedByteBuffer utilArea) throws IOException {
-        FileLock lock = channel.lock(EchoIPCServer.PRODUCER_OFFSET, 32, true);
-        clearUtilArea(lock, utilArea);
-    }
 }
