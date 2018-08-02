@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-import static server.processing.MockCobolWrapperProcedure.executeCobolProcedure;
+import static server.processing.UppercaseCobolWrapperProcedure.executeCobolProcedure;
 
 public class FJPRecursiveAction extends RecursiveAction {
 

@@ -7,7 +7,7 @@ public class MainServer {
 
     public static void main(String[] args) {
 
-        System.out.println(new CallingCobol().adaptor("saaaaaaasd"));
+        System.out.println(new CallingCobol().adaptor("s111d"));
 
         if (args.length < 4) {
             System.out.println("Wrong input arguments.\n"
