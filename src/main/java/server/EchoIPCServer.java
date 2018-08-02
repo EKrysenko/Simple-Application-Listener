@@ -59,6 +59,13 @@ public class EchoIPCServer implements Server {
         }
     }
 
+    private void initBuffers(FileChannel channel) throws IOException {
+        this.producerUtil = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
+        this.producerData = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
+        this.consumerUtil = channel.map(READ_WRITE, CONSUMER_OFFSET, 32);
+        this.consumerData = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
+    }
+
     private String readData(FileChannel channel, int dataSize, MappedByteBuffer dataArea) throws IOException {
         FileLock dataAreaLock = channel.lock(EchoIPCServer.DATA_AREA_START, dataSize, true);
         char[] chars = new char[dataSize];
@@ -86,12 +93,5 @@ public class EchoIPCServer implements Server {
     private void clearUtilArea(FileChannel channel, MappedByteBuffer utilArea) throws IOException {
         FileLock lock = channel.lock(EchoIPCServer.PRODUCER_OFFSET, 32, true);
         clearUtilArea(lock, utilArea);
-    }
-
-    private void initBuffers(FileChannel channel) throws IOException {
-        this.producerUtil = channel.map(READ_WRITE, PRODUCER_OFFSET, 32);
-        this.producerData = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
-        this.consumerUtil = channel.map(READ_WRITE, CONSUMER_OFFSET, 32);
-        this.consumerData = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
     }
 }
