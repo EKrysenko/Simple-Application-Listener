@@ -6,7 +6,9 @@ import server.processing.CallingCobol;
 public class MainServer {
 
     public static void main(String[] args) {
+
         System.out.println(new CallingCobol().adaptor("saaaaaaasd"));
+
         if (args.length < 4) {
             System.out.println("Wrong input arguments.\n"
                     + "Specify also low size, high size for a package in bytes "
