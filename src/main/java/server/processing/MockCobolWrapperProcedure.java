@@ -1,4 +1,4 @@
-package processing;
+package server.processing;
 
 public class MockCobolWrapperProcedure {
 

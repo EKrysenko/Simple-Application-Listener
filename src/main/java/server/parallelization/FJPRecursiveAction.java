@@ -1,11 +1,11 @@
-package parallelization;
+package server.parallelization;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
-import static processing.MockCobolWrapperProcedure.executeCobolProcedure;
+import static server.processing.MockCobolWrapperProcedure.executeCobolProcedure;
 
 public class FJPRecursiveAction extends RecursiveAction {
 

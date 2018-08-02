@@ -1,6 +1,6 @@
-package clients;
+package client;
 
-import dataCreater.DataCreator;
+import client.dataCreater.DataCreator;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -1,10 +1,10 @@
-import clients.Client;
-import clients.IPCClient;
-import clients.TCPClient;
+import client.Client;
+import client.IPCClient;
+import client.TCPClient;
 
 import static java.lang.Integer.parseInt;
 
-public class Main {
+public class MainClient {
 
     public static void main(String[] args) {
 

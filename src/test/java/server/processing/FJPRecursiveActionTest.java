@@ -1,6 +1,6 @@
-package processing;
+package server.processing;
 
-import parallelization.FJPRecursiveAction;
+import server.parallelization.FJPRecursiveAction;
 import org.junit.Assert;
 import org.junit.Before;
 

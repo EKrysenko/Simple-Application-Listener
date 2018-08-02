@@ -1,11 +1,11 @@
-package servers;
+package server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static constants.Constants.TCP_CONSUMER_PORT;
+import static constants.Constants.TCP_SERVER_PORT;
 
 public class EchoTCPServer implements Server {
 
@@ -20,7 +20,7 @@ public class EchoTCPServer implements Server {
     public void process() {
         String readData;
 
-        try (ServerSocket serverSocket = new ServerSocket(TCP_CONSUMER_PORT)) {
+        try (ServerSocket serverSocket = new ServerSocket(TCP_SERVER_PORT)) {
             while (true) {
                 Socket client = serverSocket.accept();
                 try (DataInputStream dataInputStream = new DataInputStream(client.getInputStream());
