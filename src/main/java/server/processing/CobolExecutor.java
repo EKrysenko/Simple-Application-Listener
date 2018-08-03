@@ -1,6 +1,6 @@
 package server.processing;
 
-public class CobolWrapper {
+public class CobolExecutor {
 
     public static void executeCobolProcedure(String[] data, int from, int to) {
         CallingCobol procedure = new CallingCobol();
