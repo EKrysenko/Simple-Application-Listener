@@ -17,9 +17,9 @@ public class EchoTCPServer implements Server {
     }
 
     @Override
-    public void process() {
-        String readData;
-
+    public void perform() {
+        String inputData;
+        String outputData;
         try (ServerSocket serverSocket = new ServerSocket(TCP_SERVER_PORT)) {
             while (true) {
                 Socket client = serverSocket.accept();
@@ -27,9 +27,11 @@ public class EchoTCPServer implements Server {
                      DataOutputStream dataOutputStream = new DataOutputStream(client.getOutputStream())) {
 
                     do {
-                        readData = dataInputStream.readUTF();
-                        dataOutputStream.writeUTF(readData);
-                    } while (!readData.equals("-1"));
+                        inputData = dataInputStream.readUTF();
+
+                        outputData = inputData; //Here we can add cobol processing
+                        dataOutputStream.writeUTF(outputData);
+                    } while (!inputData.equals("-1"));
                 }
             }
         } catch (Exception e) {
