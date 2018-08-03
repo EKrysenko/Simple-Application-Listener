@@ -7,7 +7,7 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.List;
 
-import static constants.Constants.*;
+import static constants.TCPConstants.*;
 
 public class TCPClient implements Client {
 
@@ -61,7 +61,6 @@ public class TCPClient implements Client {
 
             long finish = System.nanoTime();
 
-            System.out.println("Number of packages\nNumber of Mb\nTime\n");
             System.out.println(countOfPackage);
             System.out.println(countOfBytes / 1024 / 1024);
             System.out.println((finish - start) / 1e6 + "\n\n");

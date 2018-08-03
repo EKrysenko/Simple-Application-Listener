@@ -1,13 +1,10 @@
 import server.EchoIPCServer;
 import server.EchoTCPServer;
 import server.Server;
-import server.processing.CallingCobol;
 
 public class MainServer {
 
     public static void main(String[] args) {
-
-        System.out.println(new CallingCobol().adaptor("s111d"));
 
         if (args.length < 4) {
             System.out.println("Wrong input arguments.\n"
