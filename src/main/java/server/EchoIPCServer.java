@@ -18,12 +18,13 @@ public class EchoIPCServer extends IPCbase implements Server {
     }
 
     @Override
-    public void process() {
+    public void perform() {
         try (RandomAccessFile sharedMemory = new RandomAccessFile(SHARED_MEMORY_PATH, "rw");
              FileChannel channel = sharedMemory.getChannel()) {
+            String inputData;
+            String outputData;
 
             initBuffers(channel);
-
             prepareUtilArea(channel, clientUtil, CLIENT_OFFSET);
 
             while (true) {
@@ -32,14 +33,12 @@ public class EchoIPCServer extends IPCbase implements Server {
                     int message = clientUtil.asIntBuffer().get();
 
                     if (message != CLEAR_UTIL) {
-
-                        String inputData = readData(channel, message, DATA_AREA_START, clientData);
+                        inputData = readData(channel, message, DATA_AREA_START, clientData);
 
                         clientUtil.asIntBuffer().put(CLEAR_UTIL);
                         lockClientUtil.release();
 
-                        String outputData = inputData;
-
+                        outputData = inputData; //Here we can add cobol processing
                         writeData(outputData, channel, serverUtil, serverData, SERVER_OFFSET, DATA_AREA_START + inputData.length());
                     }
                 } finally {

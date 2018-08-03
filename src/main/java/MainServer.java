@@ -26,6 +26,6 @@ public class MainServer {
             server = EchoTCPServer.createTCPServer();
         }
 
-        server.process();
+        server.perform();
     }
 }
