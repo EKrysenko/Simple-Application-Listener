@@ -9,15 +9,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.List;
 
-import static constants.Constants.*;
+import static constants.IPCConstants.*;
 import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
 
 public class IPCClient implements Client {
-
-    private static final int CLEAR_UTIL = -1;
-    private static final int DATA_AREA_START = 64;
-    private static final int SERVER_OFFSET = 32;
-    private static final int CLIENT_OFFSET = 0;
 
     private MappedByteBuffer serverUtil;
     private MappedByteBuffer clientUtil;
