@@ -2,6 +2,7 @@ package client;
 
 import client.dataCreater.DataCreator;
 import common.IPCbase;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -10,8 +11,9 @@ import java.util.List;
 
 import static common.constants.IPCConstants.*;
 
-public class IPCClient extends IPCbase implements Client {
 
+@Slf4j
+public class IPCClient extends IPCbase implements Client {
     private int lowSizePackage;
     private int highSizePackage;
     private int transferTime;
