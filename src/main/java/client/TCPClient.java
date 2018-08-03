@@ -1,13 +1,13 @@
 package client;
 
-import dataCreater.DataCreator;
+import client.dataCreater.DataCreator;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.List;
 
-import static constants.Constants.*;
+import static common.constants.TCPConstants.*;
 
 public class TCPClient implements Client {
 
@@ -21,15 +21,14 @@ public class TCPClient implements Client {
         this.transferTime = transferTime;
     }
 
-
-    public static Client getTCPClient(int lowSizePackage, int highSizePackage, int transferTime) {
+    public static Client createTCPClient(int lowSizePackage, int highSizePackage, int transferTime) {
         return new TCPClient(lowSizePackage, highSizePackage, transferTime);
     }
 
     @Override
-    public void run() {
+    public void perform() {
 
-        try (Socket socket = new Socket(TCP_HOST, TCP_CONSUMER_PORT);
+        try (Socket socket = new Socket(TCP_HOST, TCP_SERVER_PORT);
              DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
              DataInputStream dataInputStream = new DataInputStream(socket.getInputStream())) {
 
@@ -62,7 +61,6 @@ public class TCPClient implements Client {
 
             long finish = System.nanoTime();
 
-            System.out.println("Number of packages\nNumber of Mb\nTime\n");
             System.out.println(countOfPackage);
             System.out.println(countOfBytes / 1024 / 1024);
             System.out.println((finish - start) / 1e6 + "\n\n");

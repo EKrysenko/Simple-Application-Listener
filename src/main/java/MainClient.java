@@ -4,7 +4,7 @@ import client.TCPClient;
 
 import static java.lang.Integer.parseInt;
 
-public class Main {
+public class MainClient {
 
     public static void main(String[] args) {
 
@@ -22,23 +22,23 @@ public class Main {
         int transferTime = parseInt(args[3]);
 
         if ("IPC".equals(args[0])) {
-            client = IPCClient.getIPCClient(lowSizePackage,
+            client = IPCClient.createIPCClient(lowSizePackage,
                     highSizePackage,
                     transferTime);
         } else if ("TCP".equals(args[0])) {
-            client = TCPClient.getTCPClient(lowSizePackage,
+            client = TCPClient.createTCPClient(lowSizePackage,
                     highSizePackage,
                     transferTime);
         } else {
             System.out.println("Wrong input arguments.\n"
                     + "Use TCP/SHM.\n"
                     + "By default TCP is started");
-            client = TCPClient.getTCPClient(lowSizePackage,
+            client = TCPClient.createTCPClient(lowSizePackage,
                     highSizePackage,
                     transferTime);
         }
 
-        client.run();
+        client.perform();
     }
 
 

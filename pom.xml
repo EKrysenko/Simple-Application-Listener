@@ -5,10 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>SimpleCobolAppListener</groupId>
-    <artifactId>listener</artifactId>
+    <artifactId>client</artifactId>
     <version>0.1</version>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <!-- Build an executable JAR -->
@@ -20,7 +25,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>Main</mainClass>
+                            <mainClass>MainClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -42,7 +47,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>Main</mainClass>
+                            <mainClass>MainClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -76,6 +81,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
