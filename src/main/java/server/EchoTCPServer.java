@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import static constants.TCPConstants.TCP_SERVER_PORT;
+import static common.constants.TCPConstants.TCP_SERVER_PORT;
 
 public class EchoTCPServer implements Server {
 

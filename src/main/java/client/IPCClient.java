@@ -1,23 +1,17 @@
 package client;
 
 import client.dataCreater.DataCreator;
+import common.IPCbase;
 
-import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.List;
 
-import static constants.IPCConstants.*;
-import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
+import static common.constants.IPCConstants.*;
 
-public class IPCClient implements Client {
+public class IPCClient extends IPCbase implements Client {
 
-    private MappedByteBuffer serverUtil;
-    private MappedByteBuffer clientUtil;
-    private MappedByteBuffer serverData;
-    private MappedByteBuffer clientData;
     private int lowSizePackage;
     private int highSizePackage;
     private int transferTime;
@@ -46,75 +40,42 @@ public class IPCClient implements Client {
             initBuffers(channel);
 
             label:
-            while(true) {
+            while (true) {
 
                 for (String data : sendData) {
+                    prepareUtilArea(channel, serverUtil, SERVER_OFFSET);
 
-                    FileLock lock = channel.lock(SERVER_OFFSET, 32, true);
-                    serverUtil.asIntBuffer().put(CLEAR_UTIL);
-                    lock.release();
-
-                    writeData(data, channel, clientUtil, clientData);
+                    writeData(data, channel, clientUtil, clientData, CLIENT_OFFSET, DATA_AREA_START);
 
                     int dataSize;
-                    FileLock checkConsumerUtil;
                     while (true) {
-                        checkConsumerUtil = channel.lock(SERVER_OFFSET, 32, true);
-                        if ((dataSize = serverUtil.asIntBuffer().get()) != CLEAR_UTIL) {
-                            break;
+                        FileLock lockServerUtil = channel.lock(SERVER_OFFSET, 32, true);
+                        try {
+                            if ((dataSize = serverUtil.asIntBuffer().get()) != CLEAR_UTIL) {
+                                String readData = readData(channel, dataSize, DATA_AREA_START + data.length(), serverData);
+
+                                serverUtil.asIntBuffer().put(CLEAR_UTIL);
+                                lockServerUtil.release();
+
+                                countOfPackage++;
+                                countOfBytes += readData.length();
+                                break;
+                            }
+                        } finally {
+                            lockServerUtil.release();
                         }
-                        checkConsumerUtil.release();
                     }
-
-                    String readData = readData(channel, dataSize, DATA_AREA_START + data.length(), serverData);
-
-                    serverUtil.asIntBuffer().put(CLEAR_UTIL);
-                    checkConsumerUtil.release();
-
-                    countOfPackage++;
-                    countOfBytes += readData.length();
-
                     if (System.nanoTime() - start > (long) (transferTime * 1e09)) {
                         break label;
                     }
                 }
             }
-
             long finish = System.nanoTime();
-
             System.out.println(countOfPackage);
             System.out.println(countOfBytes / 1024 / 1024);
             System.out.println((finish - start) / 1e6 + "\n\n");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-    private void initBuffers(FileChannel channel) throws IOException {
-        this.clientUtil = channel.map(READ_WRITE, CLIENT_OFFSET, 32);
-        this.clientData = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
-        this.serverUtil = channel.map(READ_WRITE, SERVER_OFFSET, 32);
-        this.serverData = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
-    }
-
-    private String readData(FileChannel channel, int dataSize, int startIndex, MappedByteBuffer dataArea) throws IOException {
-        FileLock dataAreaLock = channel.lock(startIndex, dataSize, true);
-        char[] chars = new char[dataSize];
-        dataArea.asCharBuffer().get(chars);
-        String data = new String(chars);
-        dataAreaLock.release();
-        return data;
-    }
-
-    private void writeData(String data, FileChannel channel, MappedByteBuffer utilArea, MappedByteBuffer dataArea) throws IOException {
-        FileLock utilAreaLock = channel.lock(CLIENT_OFFSET, 32, true);
-        utilArea.asIntBuffer().put(data.length());
-
-        FileLock dataAreaLock = channel.lock(DATA_AREA_START, data.length(), true);
-        dataArea.asCharBuffer().put(data);
-        dataAreaLock.release();
-        utilAreaLock.release();
-    }
-
 }

@@ -7,7 +7,7 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.List;
 
-import static constants.TCPConstants.*;
+import static common.constants.TCPConstants.*;
 
 public class TCPClient implements Client {
 
