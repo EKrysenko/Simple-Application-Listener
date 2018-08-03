@@ -1,4 +1,4 @@
-package constants;
+package common.constants;
 
 import java.io.FileInputStream;
 import java.io.IOException;

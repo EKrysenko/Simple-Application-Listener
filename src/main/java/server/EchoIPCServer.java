@@ -1,20 +1,14 @@
 package server;
 
-import java.io.IOException;
+import common.IPCbase;
+
 import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
-import static constants.IPCConstants.*;
-import static java.nio.channels.FileChannel.MapMode.READ_WRITE;
+import static common.constants.IPCConstants.*;
 
-public class EchoIPCServer implements Server {
-
-    private MappedByteBuffer serverUtil;
-    private MappedByteBuffer clientUtil;
-    private MappedByteBuffer clientData;
-    private MappedByteBuffer serverData;
+public class EchoIPCServer extends IPCbase implements Server {
 
     private EchoIPCServer() {
     }
@@ -30,28 +24,26 @@ public class EchoIPCServer implements Server {
 
             initBuffers(channel);
 
-            FileLock lock = channel.lock(CLIENT_OFFSET, 32, true);
-            clientUtil.asIntBuffer().put(CLEAR_UTIL);
-            lock.release();
+            prepareUtilArea(channel, clientUtil, CLIENT_OFFSET);
 
             while (true) {
-                FileLock checkProducerUtil = channel.lock(CLIENT_OFFSET, 32, true);
+                FileLock lockClientUtil = channel.lock(CLIENT_OFFSET, 32, true);
                 try {
                     int message = clientUtil.asIntBuffer().get();
 
                     if (message != CLEAR_UTIL) {
 
-                        String inputData = readData(channel, message, clientData);
+                        String inputData = readData(channel, message, DATA_AREA_START, clientData);
 
                         clientUtil.asIntBuffer().put(CLEAR_UTIL);
-                        checkProducerUtil.release();
+                        lockClientUtil.release();
 
                         String outputData = inputData;
 
-                        writeData(outputData, channel, DATA_AREA_START + inputData.length(), serverUtil, serverData);
+                        writeData(outputData, channel, serverUtil, serverData, SERVER_OFFSET, DATA_AREA_START + inputData.length());
                     }
                 } finally {
-                    checkProducerUtil.release();
+                    lockClientUtil.release();
                 }
             }
 
@@ -60,37 +52,5 @@ public class EchoIPCServer implements Server {
         }
     }
 
-    private void initBuffers(FileChannel channel) throws IOException {
-        this.clientUtil = channel.map(READ_WRITE, CLIENT_OFFSET, 32);
-        this.clientData = channel.map(READ_WRITE, DATA_AREA_START, SIZE / 2);
-        this.serverUtil = channel.map(READ_WRITE, SERVER_OFFSET, 32);
-        this.serverData = channel.map(READ_WRITE, DATA_AREA_START + SIZE / 2, SIZE / 2);
-    }
-
-    private String readData(FileChannel channel, int dataSize, MappedByteBuffer dataArea) throws IOException {
-        FileLock dataAreaLock = channel.lock(DATA_AREA_START, dataSize, true);
-        String data;
-        try {
-            char[] chars = new char[dataSize];
-            dataArea.asCharBuffer().get(chars);
-            data = new String(chars);
-        } finally {
-            dataAreaLock.release();
-        }
-
-        return data;
-    }
-
-    private void writeData(String data, FileChannel channel, int dataAreaStart, MappedByteBuffer utilArea, MappedByteBuffer dataArea) throws IOException {
-        FileLock utilAreaLock = channel.lock(SERVER_OFFSET, 32, true);
-        FileLock dataAreaLock = channel.lock(dataAreaStart, data.length(), true);
-        try {
-            utilArea.asIntBuffer().put(data.length());
-            dataArea.asCharBuffer().put(data);
-        } finally {
-            dataAreaLock.release();
-            utilAreaLock.release();
-        }
-    }
 
 }
