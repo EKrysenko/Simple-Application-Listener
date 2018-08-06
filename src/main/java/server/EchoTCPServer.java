@@ -1,5 +1,7 @@
 package server;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
@@ -7,6 +9,7 @@ import java.net.Socket;
 
 import static common.constants.TCPConstants.TCP_SERVER_PORT;
 
+@Slf4j
 public class EchoTCPServer implements Server {
 
     private EchoTCPServer() {
@@ -35,7 +38,7 @@ public class EchoTCPServer implements Server {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         }
     }
 }

@@ -73,11 +73,11 @@ public class IPCClient extends IPCbase implements Client {
                 }
             }
             long finish = System.nanoTime();
-            System.out.println(countOfPackage);
-            System.out.println(countOfBytes / 1024 / 1024);
-            System.out.println((finish - start) / 1e6 + "\n\n");
+            log.debug("" + countOfPackage);
+            log.debug("" + countOfBytes / 1024 / 1024);
+            log.debug("" + (finish - start) / 1e6 + "\n\n");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         }
     }
 }

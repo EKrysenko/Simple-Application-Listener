@@ -1,6 +1,7 @@
 package server;
 
 import common.IPCbase;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -8,6 +9,7 @@ import java.nio.channels.FileLock;
 
 import static common.constants.IPCConstants.*;
 
+@Slf4j
 public class EchoIPCServer extends IPCbase implements Server {
 
     private EchoIPCServer() {
@@ -47,7 +49,7 @@ public class EchoIPCServer extends IPCbase implements Server {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         }
     }
 
