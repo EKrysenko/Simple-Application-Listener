@@ -1,6 +1,7 @@
 package client;
 
 import client.dataCreater.DataCreator;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,6 +10,8 @@ import java.util.List;
 
 import static common.constants.TCPConstants.*;
 
+
+@Slf4j
 public class TCPClient implements Client {
 
     private int lowSizePackage;
@@ -66,7 +69,7 @@ public class TCPClient implements Client {
             System.out.println((finish - start) / 1e6 + "\n\n");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(String.valueOf(e));
         }
     }
 }
