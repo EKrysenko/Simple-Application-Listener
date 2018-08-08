@@ -1,5 +1,3 @@
-.gradle
-gradle
 version.properties
 /build/
 !gradle/wrapper/gradle-wrapper.jar
