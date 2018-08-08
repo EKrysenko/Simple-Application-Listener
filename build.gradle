@@ -21,14 +21,14 @@ dependencies {
 jar {
     baseName = 'server'
     exclude '**/client/**'
-    exclude 'MainClient'
+    exclude 'MainClient*'
 
     manifest {
         attributes "Main-Class": "MainServer"
     }
 
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
@@ -36,14 +36,14 @@ jar {
 task clientJar(type: Jar) {
     baseName = 'client'
     exclude '**/server/**'
-    exclude 'MainServer'
+    exclude 'MainServer*'
 
     manifest {
         attributes "Main-Class": "MainClient"
     }
 
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
     }
 
     from sourceSets.main.output
