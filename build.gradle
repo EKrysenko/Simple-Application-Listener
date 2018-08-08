@@ -22,6 +22,8 @@ dependencies {
 jar {
     baseName = 'server'
     exclude '**/client/**'
+    exclude 'MainClient'
+
     manifest {
         attributes "Main-Class": "MainServer"
     }
@@ -35,6 +37,7 @@ jar {
 task clientJar(type: Jar) {
     baseName = 'client'
     exclude '**/server/**'
+    exclude 'MainServer'
 
     manifest {
         attributes "Main-Class": "MainClient"
