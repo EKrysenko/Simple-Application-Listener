@@ -64,10 +64,9 @@ public class TCPClient implements Client {
 
             long finish = System.nanoTime();
 
-            System.out.println(countOfPackage);
-            System.out.println(countOfBytes / 1024 / 1024);
-            System.out.println((finish - start) / 1e6 + "\n\n");
-
+            log.info("" + countOfPackage);
+            log.info("" + countOfBytes / 1024 / 1024);
+            log.info("" + (finish - start) / 1e6 + "\n");
         } catch (Exception e) {
             log.error(String.valueOf(e));
         }
